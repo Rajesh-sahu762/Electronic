@@ -1,10 +1,10 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Login.aspx.cs" Inherits="Client_Login" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ResetPassword.aspx.cs" Inherits="Client_ResetPassword" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-   <title>Client Login</title>
+   <title>Reset Password</title>
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
         }
 
         .icon {
-            font-size: 42px;
+            font-size: 40px;
             color: #4f46e5;
             animation: pulse 1.5s infinite;
         }
@@ -86,44 +86,46 @@
 <div class="box" id="box">
 
     <div class="text-center mb-2">
-        <i class="bi bi-shop icon"></i>
+        <i class="bi bi-shield-lock icon"></i>
     </div>
 
-    <h4 class="text-center mb-4">Client Login</h4>
-
-    <asp:TextBox ID="txtEmail" runat="server"
-        CssClass="form-control mb-3"
-        placeholder="Email address" />
+    <h4 class="text-center mb-4">Reset Password</h4>
 
     <div class="position-relative mb-3">
         <asp:TextBox ID="txtPassword" runat="server"
             TextMode="Password"
             CssClass="form-control"
-            placeholder="Password" />
+            placeholder="New password" />
         <i class="bi bi-eye-fill eye"
            onclick="togglePwd('<%= txtPassword.ClientID %>')"></i>
     </div>
 
-    <asp:Label ID="Label1" runat="server"
-    CssClass="text-danger text-center d-block mt-2"></asp:Label>
+    <div class="position-relative mb-3">
+        <asp:TextBox ID="txtConfirm" runat="server"
+            TextMode="Password"
+            CssClass="form-control"
+            placeholder="Confirm password" />
+        <i class="bi bi-eye-fill eye"
+           onclick="togglePwd('<%= txtConfirm.ClientID %>')"></i>
+    </div>
 
-<div class="text-center mt-2">
-    <a href="ForgotPassword.aspx"
-       style="font-size:14px; color:#4f46e5; text-decoration:none;">
-        Forgot password?
-    </a>
+    <div class="mb-2">
+    <div class="progress" style="height:6px;">
+        <div id="strengthBar" class="progress-bar"></div>
+    </div>
+    <small id="strengthText"></small>
 </div>
-<br />
 
-    <asp:Button ID="btnLogin" runat="server"
-        Text="Login"
+
+    <asp:Button ID="btnReset" runat="server"
+        Text="Reset Password"
         CssClass="btn btn-main w-100 text-white"
         OnClientClick="showLoader()"
-        OnClick="btnLogin_Click" />
+        OnClick="btnReset_Click" />
 
     <div class="loader" id="loader">
         <div class="spinner-border spinner-border-sm text-primary"></div>
-        Logging in...
+        Updating password...
     </div>
 
     <asp:Label ID="lblMsg" runat="server"
@@ -149,6 +151,38 @@
             document.getElementById("box").classList.add("shake");
         }
     };
+
+        var pwd = document.getElementById('<%= txtPassword.ClientID %>');
+    var bar = document.getElementById('strengthBar');
+    var text = document.getElementById('strengthText');
+
+    pwd.onkeyup = function () {
+        var val = pwd.value;
+        var score = 0;
+
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        if (score <= 1) {
+            bar.style.width = "25%";
+            bar.className = "progress-bar bg-danger";
+            text.innerHTML = "Weak password";
+        }
+        else if (score <= 3) {
+            bar.style.width = "60%";
+            bar.className = "progress-bar bg-warning";
+            text.innerHTML = "Medium strength";
+        }
+        else {
+            bar.style.width = "100%";
+            bar.className = "progress-bar bg-success";
+            text.innerHTML = "Strong password";
+        }
+    };
+
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

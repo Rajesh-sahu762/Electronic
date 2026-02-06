@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.UI;
@@ -50,7 +49,7 @@ public partial class Client_Register : System.Web.UI.Page
                 return;
             }
 
-            // ✅ CLIENT REGISTER
+            // ✅ CLIENT REGISTER (PLAIN PASSWORD)
             SqlCommand cmd = new SqlCommand(@"
 INSERT INTO Users
 (Role, FullName, Email, PasswordHash,
@@ -61,7 +60,7 @@ VALUES
 
             cmd.Parameters.AddWithValue("@n", txtName.Text.Trim());
             cmd.Parameters.AddWithValue("@e", txtEmail.Text.Trim());
-            cmd.Parameters.AddWithValue("@p", Hash(txtPassword.Text.Trim()));
+            cmd.Parameters.AddWithValue("@p", txtPassword.Text.Trim()); // 👈 NO HASH
             cmd.Parameters.AddWithValue("@otp", otp);
             cmd.Parameters.AddWithValue("@exp", expiry);
 
@@ -70,7 +69,6 @@ VALUES
 
         SendOTP(txtEmail.Text.Trim(), otp);
 
-        // 🔁 OTP verify page
         Response.Redirect("VerifyOTP.aspx?email=" + txtEmail.Text.Trim() + "&type=register");
     }
 
@@ -87,14 +85,5 @@ VALUES
             "rajeshsahu3406@gmail.com", "ksch jicp cwye gbnk");
         smtp.EnableSsl = true;
         smtp.Send(mail);
-    }
-
-    string Hash(string input)
-    {
-        using (SHA256 sha = SHA256.Create())
-        {
-            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            return Convert.ToBase64String(bytes);
-        }
     }
 }
