@@ -114,10 +114,7 @@ CREATE TABLE ProductImages (
 select * from ProductImages
 select * from VendorDetails
 
-UPDATE VendorDetails
-SET DocumentPath = 'a94c6153-5998-491e-b9c0-2a747aa7c79f.png'
-WHERE VendorID = 2;
-
+DELETE FROM Users WHERE UserID=3;
 
 CREATE TABLE Orders (
     OrderID INT IDENTITY(1,1) PRIMARY KEY,
@@ -157,4 +154,6 @@ CREATE TABLE Wishlist (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
+
+select * from Users
 
