@@ -54,6 +54,8 @@ public partial class Client_Default : System.Web.UI.Page
             cart.Remove(item);
 
         BindCart();
+        Session["CART"] = cart;
+
     }
 
     protected void btnCheckout_Click(object sender, EventArgs e)

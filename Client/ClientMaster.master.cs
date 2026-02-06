@@ -12,37 +12,119 @@ public partial class Client_ClientMaster : System.Web.UI.MasterPage
 {
     string conStr = ConfigurationManager.ConnectionStrings["Electronic"].ConnectionString;
 
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        string page = Request.Url.AbsolutePath.ToLower();
+
+        bool isProtected =
+            page.Contains("cart.aspx") ||
+            page.Contains("checkout.aspx") ||
+            page.Contains("wishlist.aspx") ||
+            page.Contains("order.aspx");
+
+        if (isProtected)
+        {
+            if (Session["UserID"] == null || Session["Role"] == null || Session["Role"].ToString() != "Client")
+            {
+                Response.Redirect("Login.aspx");
+            }
+        }
+    }
+
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
             LoadCategories();
             HandleLoginState();
-            LoadCartCount();
             LoadWishlistCount();
         }
+
+        LoadCartCount();
+        LoadMiniCart();
+
     }
 
     void HandleLoginState()
     {
-        if (Session["UserID"] != null && Session["Role"].ToString() == "Client")
+        bool isClient =
+            Session["UserID"] != null &&
+            Session["Role"] != null &&
+            Session["Role"].ToString() == "Client";
+
+        phGuest.Visible = !isClient;
+        phUser.Visible = isClient;
+
+        phHeaderGuest.Visible = !isClient;
+        phHeaderUser.Visible = isClient;
+
+        if (isClient && Session["FullName"] != null)
         {
-            phGuest.Visible = false;
-            phUser.Visible = true;
-            lblUser.Text = Session["ClientName"].ToString();
+            lblUser.Text = Session["FullName"].ToString();
+            lblHeaderUser.Text = Session["FullName"].ToString();
         }
     }
 
+
+    void LoadMiniCart()
+    {
+        if (Session["CART"] == null)
+            return;
+
+        var cart = Session["CART"] as List<CartItem>;
+        if (cart == null) return;
+
+        rptMiniCart.DataSource = cart;
+        rptMiniCart.DataBind();
+
+        upMiniCart.Update();
+
+    }
+
+    protected void rptMiniCart_ItemCommand(object source, RepeaterCommandEventArgs e)
+    {
+        if (Session["CART"] == null) return;
+
+        List<CartItem> cart = Session["CART"] as List<CartItem>;
+        if (cart == null) return;
+
+        int pid = Convert.ToInt32(e.CommandArgument);
+
+        CartItem item = cart.FirstOrDefault(x => x.ProductID == pid);
+        if (item != null)
+            cart.Remove(item);
+
+        Session["CART"] = cart;
+
+        LoadMiniCart();
+        LoadCartCount();
+    }
+
+
+
     void LoadCartCount()
     {
-        if (Session["Cart"] != null)
+        int totalQty = 0;
+
+        if (Session["CART"] != null)
         {
-            DataTable dt = (DataTable)Session["Cart"];
-            lblCartCount.Text = dt.Rows.Count.ToString();
+            List<CartItem> cart = Session["CART"] as List<CartItem>;
+            if (cart != null)
+            {
+                foreach (CartItem item in cart)
+                {
+                    totalQty += item.Quantity;
+                }
+            }
         }
-        else
-            lblCartCount.Text = "0";
+
+        lblCartCount.Text = totalQty.ToString();
+        upCartCount.Update(); // 🔥 THIS IS THE KEY
+
     }
+
+
 
 
     void LoadWishlistCount()
@@ -56,7 +138,9 @@ public partial class Client_ClientMaster : System.Web.UI.MasterPage
             cmd.Parameters.AddWithValue("@uid", Session["UserID"]);
 
             con.Open();
-            lblWishCount.Text = cmd.ExecuteScalar().ToString();
+            object count = cmd.ExecuteScalar();
+            lblWishCount.Text = (count == null) ? "0" : count.ToString();
+
         }
     }
 

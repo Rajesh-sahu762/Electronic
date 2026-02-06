@@ -38,6 +38,62 @@
 		padding: 0 !important;
 	}
 </style>
+
+    <style>
+        <style>
+.mini-cart-row{
+    display:flex;
+    align-items:center;
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
+.mini-cart-img img{
+    width:60px;
+    height:60px;
+    object-fit:cover;
+}
+.mini-cart-info{
+    flex:1;
+    padding:0 10px;
+}
+.mini-cart-name{
+    font-size:14px;
+    font-weight:600;
+}
+.mini-cart-price{
+    font-size:13px;
+    color:#777;
+}
+.mini-cart-remove{
+    font-size:18px;
+}
+.mini-remove-btn{
+    color:#999;
+    text-decoration:none;
+}
+.mini-remove-btn:hover{
+    color:red;
+}
+.mini-cart-footer{
+    display:flex;
+    gap:10px;
+    padding:10px;
+}
+.btn-viewcart,
+.btn-checkout{
+    flex:1;
+    text-align:center;
+    padding:10px;
+    background:#000;
+    color:#fff;
+    text-decoration:none;
+}
+.btn-checkout{
+    background:#ff6a00;
+}
+</style>
+
+    </style>
 <style id='classic-theme-styles-inline-css' type='text/css'>
 /*! This file is auto-generated */
 .wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
@@ -244,6 +300,9 @@
 
     <form id="form1" runat="server">
 
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+
 
         <div id='page' class="hfeed page-wrapper  " >
 			<h1 class="bwp-title hide"><a href="Index.aspx" rel="home">Arostore</a></h1>
@@ -298,9 +357,8 @@
 									<div class="dropdown mini-cart top-cart" data-text_added="Product was added to cart successfully!">
 	<a class="cart-icon" href="#" role="button">
 		<i class="icon-cart"></i>
-		<span class="cart-count">
-    <asp:Label ID="lblCartCount" runat="server" Text="0" />
-</span>
+
+    <span class="cart-count">0</span>
 
 		<span class="text-name">
 			<span class="sub">Cart:  </span>
@@ -538,13 +596,29 @@
 						<div class="header-right">
 							<div class="header-page-link">
 								<div class="login-header">
-									<a href="../my-account/index.html">
-										<i class="icon-my-account"></i>
-										<span class="text-name">
-											<span class="sub">Login </span>
-											My Account										</span>
-									</a>
-								</div>	
+
+    <asp:PlaceHolder ID="phHeaderGuest" runat="server">
+        <a href="Login.aspx">
+            <i class="icon-my-account"></i>
+            <span class="text-name">
+                <span class="sub">Login</span>
+                My Account
+            </span>
+        </a>
+    </asp:PlaceHolder>
+
+    <asp:PlaceHolder ID="phHeaderUser" runat="server" Visible="false">
+        <a href="Profile.aspx">
+            <i class="icon-my-account"></i>
+            <span class="text-name">
+                <span class="sub">Hello</span>
+                <asp:Label ID="lblHeaderUser" runat="server" />
+            </span>
+        </a>
+    </asp:PlaceHolder>
+
+</div>
+
 																<div class="wishlist-box">
 									<a href="Wishlist.aspx">
 										<i class="icon-my-wishlist"></i>
@@ -558,7 +632,13 @@
 										<div class="dropdown mini-cart top-cart" data-text_added="Product was added to cart successfully!">
 	<a class="cart-icon" href="#" role="button">
 		<i class="icon-cart"></i>
-		<span class="cart-count">0</span>
+		<asp:UpdatePanel ID="upCartCount" runat="server" UpdateMode="Conditional">
+    <ContentTemplate>
+        <span class="cart-count">
+            <asp:Label ID="lblCartCount" runat="server" Text="0" />
+        </span>
+    </ContentTemplate>
+</asp:UpdatePanel>
 		<span class="text-name">
 			<span class="sub">Cart:  </span>
 			<span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">&#036;</span>0.00</span>		</span>
@@ -579,7 +659,54 @@
 				<a class="go-shop" href="Shop.aspx">Shop all products</a>
 			</div>
 				<form class="cart-header-form" action="https://arostore.wpbingosite.com/cart/" method="post">
-						<div class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
+						<div class="shop_table shop_table_responsive cart woocommerce-cart-form__contents">
+
+        <asp:UpdatePanel ID="upMiniCart" runat="server" UpdateMode="Conditional">
+
+    <ContentTemplate>
+
+        <asp:Repeater ID="rptMiniCart" runat="server"
+            OnItemCommand="rptMiniCart_ItemCommand">
+
+            <ItemTemplate>
+                <div class="mini-cart-row">
+
+                    <div class="mini-cart-img">
+                        <img src="../Uploads/ProductImages/<%# Eval("ImagePath") %>" />
+                    </div>
+
+                    <div class="mini-cart-info">
+                        <div class="mini-cart-name">
+                            <%# Eval("ProductName") %>
+                        </div>
+                        <div class="mini-cart-price">
+                            <%# Eval("Quantity") %> × ₹ <%# Eval("Price") %>
+                        </div>
+                    </div>
+
+                    <div class="mini-cart-remove">
+                        <asp:LinkButton ID="btnRemove"
+                            runat="server"
+                            CommandName="REMOVE"
+                            CommandArgument='<%# Eval("ProductID") %>'
+                            CssClass="mini-remove-btn"
+                            Text="×" />
+                    </div>
+
+                </div>
+            </ItemTemplate>
+
+        </asp:Repeater>
+
+        <div class="mini-cart-footer">
+            <a href="Cart.aspx" class="btn-viewcart">View Cart</a>
+            <a href="Checkout.aspx" class="btn-checkout">Checkout</a>
+        </div>
+
+    </ContentTemplate>
+</asp:UpdatePanel>
+
+
 											</div>
 			<input type="hidden" id="Hidden2" name="woocommerce-cart-nonce" value="334338a965" /><input type="hidden" name="_wp_http_referer" value="/home-4/" />			<input type="hidden" name="update_cart" value="Update cart">
 					</form><!-- end product list -->
