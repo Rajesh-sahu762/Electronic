@@ -4,138 +4,171 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-  <title>Register</title>
+  <title>Registration</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
 
     <style>
-        body{
-            font-family:Arial;
-            background:#f6f6f6;
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .auth-card{
-            width:420px;
-            margin:60px auto;
-            background:#fff;
-            padding:30px;
-            border-radius:10px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+
+        .card-box {
+            width: 420px;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
         }
-        h2{
-            text-align:center;
-            margin-bottom:20px;
+
+        .lock {
+            font-size: 42px;
+            color: #4f46e5;
+            animation: pulse 1.5s infinite;
         }
-        .input{
-            width:100%;
-            padding:10px;
-            margin-bottom:12px;
-            border:1px solid #ccc;
-            border-radius:5px;
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
-        .btn{
-            width:100%;
-            background:#ffb300;
-            color:#fff;
-            border:none;
-            padding:12px;
-            border-radius:6px;
-            font-size:15px;
-            cursor:pointer;
+
+        .title {
+            color: #4f46e5;
+            font-weight: 600;
         }
-        .error{
-            color:red;
-            font-size:13px;
+
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
         }
-        .success{
-            color:green;
-            font-size:14px;
-            text-align:center;
+
+        .btn-main {
+            height: 45px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            border: none;
+            font-weight: 600;
         }
-        .otp-box{
-            display:flex;
-            gap:8px;
-            justify-content:center;
+
+        .btn-main:hover {
+            opacity: 0.95;
         }
-        .otp-box input{
-            width:40px;
-            text-align:center;
-            font-size:18px;
+
+        .eye {
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-6px); }
+            100% { transform: translateX(0); }
         }
     </style>
 </head>
 
 <body>
-<form id="form1" runat="server">
+<form id="Form1" runat="server">
 
-<div class="auth-card">
+<div class="card-box" id="box">
 
-    <h2>User Register</h2>
+    <div class="text-center mb-2">
+        <i class="bi bi-shop-window lock"></i>
+    </div>
 
-    <!-- REGISTER PANEL -->
-    <asp:Panel ID="pnlRegister" runat="server">
+    <h4 class="text-center title mb-4">Client Registration</h4>
 
-        <asp:TextBox ID="txtName" runat="server" CssClass="input" Placeholder="Full Name" />
-        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ControlToValidate="txtName" CssClass="error"
-            ErrorMessage="Name required" runat="server" Display="Dynamic" />
+    <asp:TextBox ID="txtName" runat="server"
+        CssClass="form-control mb-3"
+        placeholder="Full Name" />
 
-        <asp:TextBox ID="txtEmail" runat="server" CssClass="input" Placeholder="Email" />
-        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" ControlToValidate="txtEmail" CssClass="error"
-            ErrorMessage="Email required" runat="server" Display="Dynamic" />
-        <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ControlToValidate="txtEmail" CssClass="error"
-            ValidationExpression="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$"
-            ErrorMessage="Invalid Email" runat="server" Display="Dynamic" />
+    <asp:TextBox ID="txtEmail" runat="server"
+        CssClass="form-control mb-3"
+        placeholder="Email address" />
 
-        <asp:TextBox ID="txtMobile" runat="server" CssClass="input" Placeholder="Mobile" />
-        <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ControlToValidate="txtMobile" CssClass="error"
-            ErrorMessage="Mobile required" runat="server" Display="Dynamic" />
+    <div class="position-relative mb-3">
+        <asp:TextBox ID="txtPassword" runat="server"
+            TextMode="Password"
+            CssClass="form-control"
+            placeholder="Password" />
+        <i class="bi bi-eye-fill eye"
+           onclick="togglePwd('<%= txtPassword.ClientID %>')"></i>
+    </div>
 
-        <asp:TextBox ID="txtPassword" runat="server" CssClass="input"
-            TextMode="Password" Placeholder="Password" />
-        <asp:RequiredFieldValidator ID="RequiredFieldValidator4" ControlToValidate="txtPassword" CssClass="error"
-            ErrorMessage="Password required" runat="server" Display="Dynamic" />
+    <div class="position-relative mb-3">
+        <asp:TextBox ID="txtConfirm" runat="server"
+            TextMode="Password"
+            CssClass="form-control"
+            placeholder="Confirm Password" />
+        <i class="bi bi-eye-fill eye"
+           onclick="togglePwd('<%= txtConfirm.ClientID %>')"></i>
+    </div>
 
-        <asp:TextBox ID="txtConfirm" runat="server" CssClass="input"
-            TextMode="Password" Placeholder="Confirm Password" />
-        <asp:CompareValidator ID="CompareValidator1" ControlToCompare="txtPassword"
-            ControlToValidate="txtConfirm"
-            CssClass="error"
-            ErrorMessage="Password mismatch"
-            runat="server" Display="Dynamic" />
+    <asp:Button ID="btnRegister" runat="server"
+        Text="Register"
+        CssClass="btn btn-main w-100 text-white"
+        OnClientClick="showLoader()"
+        OnClick="btnRegister_Click" />
 
-        <asp:Label ID="lblMsg" runat="server" CssClass="error" />
+    <div class="loader" id="loader">
+        <div class="spinner-border text-primary spinner-border-sm"></div>
+        <span> Creating account...</span>
+    </div>
 
-        <asp:Button ID="btnRegister" runat="server"
-            Text="Register & Send OTP"
-            CssClass="btn"
-            OnClick="btnRegister_Click" />
-
-    </asp:Panel>
-
-    <!-- OTP PANEL -->
-    <asp:Panel ID="pnlOTP" runat="server" Visible="false">
-
-        <p class="success">OTP sent to your email</p>
-
-        <div class="otp-box">
-            <asp:TextBox ID="otp1" runat="server" CssClass="input" MaxLength="1" />
-            <asp:TextBox ID="otp2" runat="server" CssClass="input" MaxLength="1" />
-            <asp:TextBox ID="otp3" runat="server" CssClass="input" MaxLength="1" />
-            <asp:TextBox ID="otp4" runat="server" CssClass="input" MaxLength="1" />
-            <asp:TextBox ID="otp5" runat="server" CssClass="input" MaxLength="1" />
-            <asp:TextBox ID="otp6" runat="server" CssClass="input" MaxLength="1" />
-        </div>
-
-        <br />
-
-        <asp:Label ID="lblOtpMsg" runat="server" CssClass="error" />
-
-        <asp:Button ID="btnVerify" runat="server"
-            Text="Verify OTP"
-            CssClass="btn"
-            OnClick="btnVerify_Click" />
-
-    </asp:Panel>
+    <asp:Label ID="lblMsg" runat="server" CssClass="error"></asp:Label>
 
 </div>
 
 </form>
+
+<script>
+    function togglePwd(id) {
+        var x = document.getElementById(id);
+        x.type = x.type === "password" ? "text" : "password";
+    }
+
+    function showLoader() {
+        document.getElementById("loader").style.display = "block";
+    }
+
+    window.onload = function () {
+        var msg = document.getElementById('<%= lblMsg.ClientID %>');
+        if (msg.innerText !== "") {
+            document.getElementById("box").classList.add("shake");
+        }
+    };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
