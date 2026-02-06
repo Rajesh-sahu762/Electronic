@@ -1,0 +1,184 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="AdminMaster.master.cs" Inherits="Admin_AdminMaster" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+ <title>Admin Panel</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+   <style>
+    /* ========== THEME VARIABLES ========== */
+    body.dark {
+        --bg: #0f172a;
+        --card: #020617;
+        --border: #1e293b;
+        --text: #e5e7eb;
+        --sidebar: #020617;
+        --hover: #1e293b;
+    }
+
+    body.light {
+        --bg: #f4f6f9;
+        --card: #ffffff;
+        --border: #ddd;
+        --text: #111827;
+        --sidebar: linear-gradient(180deg, #ff6a00, #ee0979);
+        --hover: rgba(255,255,255,0.2);
+    }
+
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        transition: all 0.3s ease;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        min-height: 100vh;
+        background: var(--sidebar);
+        position: fixed;
+        left: 0;
+        top: 0;
+    }
+
+    .sidebar h4 {
+        color: #f97316;
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar a {
+        color: var(--text);
+        padding: 12px 20px;
+        display: block;
+        text-decoration: none;
+    }
+
+    .sidebar a:hover {
+        background: var(--hover);
+    }
+
+    /* Topbar */
+    .topbar {
+        margin-left: 250px;
+        background: var(--card);
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Content */
+    .content {
+        margin-left: 250px;
+        padding: 20px;
+    }
+
+    /* Cards */
+    .card {
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+
+    /* Tables */
+    .table th, .table td {
+        background: var(--card);
+        color: var(--text);
+        border-color: var(--border);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: var(--hover);
+    }
+
+    /* Inputs */
+    .form-control, .form-select {
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+
+    /* Buttons */
+    .btn-theme {
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+    }
+</style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+
+    <form id="Form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h4>Admin Panel</h4>
+            <a href="AdminDashboard.aspx"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="Vendors.aspx"><i class="bi bi-people"></i> Vendors</a>
+            <a href="Categories.aspx"><i class="bi bi-tags"></i> Categories</a>
+            <a href="Products.aspx"><i class="bi bi-box"></i> Products</a>
+            <a href="Orders.aspx"><i class="bi bi-receipt"></i> Orders</a>
+            <a href="Logout.aspx"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </div>
+
+        <!-- TOP BAR -->
+  <div class="topbar d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">
+        Welcome, <asp:Label ID="lblAdmin" runat="server"></asp:Label>
+    </h5>
+
+    <button type="button"
+        class="btn btn-theme btn-sm"
+        onclick="toggleTheme()">
+        🌙 / ☀️
+    </button>
+</div>
+
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+        </div>
+
+    </form>
+
+    <script>
+        function setTheme(theme) {
+            document.body.classList.remove("dark", "light");
+            document.body.classList.add(theme);
+            localStorage.setItem("adminTheme", theme);
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains("dark")) {
+                setTheme("light");
+            } else {
+                setTheme("dark");
+            }
+        }
+
+        // DEFAULT = DARK
+        (function () {
+            var saved = localStorage.getItem("adminTheme");
+            if (saved) {
+                setTheme(saved);
+            } else {
+                setTheme("dark");
+            }
+        })();
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

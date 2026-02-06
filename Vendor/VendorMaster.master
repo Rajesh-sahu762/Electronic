@@ -1,0 +1,136 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="VendorMaster.master.cs" Inherits="Vendor_VendorMaster" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Vendor Panel</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #4f46e5, #06b6d4);
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: #fff;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .sidebar a i {
+            margin-right: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* TOPBAR */
+        .topbar {
+            margin-left: 240px;
+            background: #fff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* CONTENT */
+        .content {
+            margin-left: 240px;
+            padding: 25px;
+        }
+
+        .vendor-name {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+
+<body>
+<form id="form1" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>Vendor Panel</h4>
+
+        <a href="Dashboard.aspx">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+
+        <a href="Products.aspx">
+            <i class="bi bi-box-seam"></i> Products
+        </a>
+
+        <a href="Categories.aspx">
+            <i class="bi bi-receipt"></i> Categories
+        </a>
+
+         <a href="Orders.aspx">
+            <i class="bi bi-receipt"></i> Orders
+        </a>
+
+        <a href="Profile.aspx">
+            <i class="bi bi-person"></i> Profile
+        </a>
+
+        <a href="Logout.aspx">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div>
+            Welcome,
+            <span class="vendor-name">
+                <asp:Label ID="lblVendor" runat="server"></asp:Label>
+            </span>
+        </div>
+
+        <div>
+            <i class="bi bi-shop"></i>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+    </div>
+
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

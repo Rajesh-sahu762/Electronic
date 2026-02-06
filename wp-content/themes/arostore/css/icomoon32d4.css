@@ -1,0 +1,125 @@
+@font-face{
+  font-family:icomoon;
+  src:url(../fonts/icomoon6dbe.eot?fzv6fp);
+  src:url(../fonts/icomoon6dbe.eot?fzv6fp#iefix) format("embedded-opentype"),url(../fonts/icomoon6dbe.ttf?fzv6fp) format("truetype"),url(../fonts/icomoon6dbe.woff?fzv6fp) format("woff"),url(../fonts/icomoon6dbe.svg?fzv6fp#icomoon) format("svg");
+  font-weight:400;
+  font-style:normal;
+  font-display:block;
+}
+
+[class*=" icon-"],[class^=icon-]{
+  font-family:icomoon;
+  speak:none;
+  font-style:normal;
+  font-weight:400;
+  font-variant:normal;
+  text-transform:none;
+  line-height:1;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.icon-bell:before{
+  content:"\e91f";
+}
+.icon-discount:before{
+  content:"\e91e";
+}
+.icon-best-seller:before{
+  content:"\e91d";
+}
+.icon-arrow-r:before{
+  content:"\e900";
+}
+.icon-arrow-rr:before{
+  content:"\e901";
+}
+.icon-arrow:before{
+  content:"\e902";
+}
+.icon-camera--photo:before{
+  content:"\e903";
+}
+.icon-cart:before{
+  content:"\e904";
+}
+.icon-clock:before{
+  content:"\e905";
+}
+.icon-compare:before{
+  content:"\e906";
+}
+.icon-daily-offers:before{
+  content:"\e907";
+}
+.icon-dot:before{
+  content:"\e908";
+}
+.icon-drone:before{
+  content:"\e909";
+}
+.icon-free-delivery:before{
+  content:"\e90a";
+}
+.icon-gamepad--console:before{
+  content:"\e90b";
+}
+.icon-headphone--speaker:before{
+  content:"\e90c";
+}
+.icon-home--electronic:before{
+  content:"\e90d";
+}
+.icon-laptop--computer:before{
+  content:"\e90e";
+}
+.icon-my-account:before{
+  content:"\e90f";
+}
+.icon-my-wishlist:before{
+  content:"\e910";
+}
+.icon-need-help:before{
+  content:"\e911";
+}
+.icon-phone-case-3:before{
+  content:"\e912";
+}
+.icon-pluss:before{
+  content:"\e913";
+}
+.icon-quotes:before{
+  content:"\e914";
+}
+.icon-search-1:before{
+  content:"\e915";
+}
+.icon-search:before{
+  content:"\e916";
+}
+.icon-smartphones:before{
+  content:"\e917";
+}
+.icon-star-1:before{
+  content:"\e918";
+}
+.icon-star:before{
+  content:"\e919";
+}
+.icon-transport:before{
+  content:"\e91a";
+}
+.icon-TVs--audios:before{
+  content:"\e91b";
+}
+.icon-watches--eyewear:before{
+  content:"\e91c";
+}
+.icon-tiktok:before{
+  content:"\e920";
+}
+.icon-x-twitter:before{
+  content:"\e921";
+}
+
+
