@@ -6,6 +6,95 @@
 
     <style>
 
+
+
+/* overlay wrapper */
+.product-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: all .25s ease;
+    z-index: 25;
+}
+
+.products-entry:hover .product-actions {
+    opacity: 1;
+    transform: translateY(0); /* 🔥 pehle jaisa smooth */
+}
+
+
+/* QUICKVIEW ICON BUTTON */
+.quickview-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    transition: all .25s ease;
+}
+
+.quickview-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* 🔥 kill Arostore default quickview text */
+.product-quickview,
+.product-quickview * {
+    display: none !important;
+}
+
+/* 🔒 make sure parent is reference */
+.products-thumb,
+.product-thumb-hover {
+    position: relative !important;
+}
+
+/* ❤️ wishlist button – universal fix */
+.wishlist-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    transition: all .25s ease;
+    color: #888;
+}
+
+.wishlist-btn:hover {
+    transform: scale(1.08);
+}
+
+.wishlist-btn.active {
+    background: #ff6a00;
+    color: #fff;
+}
+
+
+
     .category-grid{
     display:grid;
     margin-left:20px;
@@ -661,13 +750,26 @@
                         <img src='../Uploads/ProductImages/<%# Eval("HoverImage") %>' class="hover-image back" />
                     </a>
                 </div>
-     <div class='product-button'>
-                                                                                                                <div class="woosw-wishlist" data-title="Wishlist">
-                                                                                                                    <button class="woosw-btn woosw-btn-16541" data-id="16541">Add to wishlist</button></div>
-                                                                                                                <div class="woosc-compare" data-title="Compare">
-                                                                                                                    <button class="woosc-btn woosc-btn-16541 " data-id="16541">Compare</button></div>
-                                                                                                                <span class="product-quickview" data-title="Quick View"><a href="#" data-product_id="16541" class="quickview quickview-button quickview-16541"><span>Quick View</span></a></span>
-                                                                                                            </div>
+
+        <div class="product-actions">
+
+    <!-- ❤️ Wishlist -->
+    <button type="button"
+        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+        data-pid="<%# Eval("ProductID") %>"
+        onclick="toggleWishlist(this)">
+        ❤
+    </button>
+
+    <!-- 👁 Quickview (ICON ONLY) -->
+    <button type="button"
+            class="quickview-btn"
+            onclick="openQuickView(<%# Eval("ProductID") %>)">
+        🔍
+    </button>
+
+</div>
+
 
             </div>
 
@@ -699,7 +801,7 @@
 
                      <div class="product-cart">
                       <div data-title="Buy product">
-                          <a rel="nofollow" href="Cart.aspx?add=<%# Eval("ProductID") %>" data-quantity="1" data-product_id="16541" data-product_sku="D2300-3-2-3" class="button product_type_external read_more"><span>Buy product</span></a></div>
+                          <a rel="nofollow" href="ProductDetails.aspx?pid=<%# Eval("ProductID") %>" data-quantity="1" data-product_id="16541" data-product_sku="D2300-3-2-3" class="button product_type_external read_more"><span>Buy product</span></a></div>
                       </div>
 
                 </div>
@@ -886,29 +988,25 @@
 
                             </a>
                         </div>
+     <div class="product-actions">
 
-<div class="product-button">
+    <!-- ❤️ Wishlist -->
+    <button type="button"
+        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+        data-pid="<%# Eval("ProductID") %>"
+        onclick="toggleWishlist(this)">
+        ❤
+    </button>
 
-    <div class="woosw-wishlist" data-title="Wishlist">
-        <button class="woosw-btn" data-id='<%# Eval("ProductID") %>'>
-            Add to wishlist
-        </button>
-    </div>
-
-    <div class="woosc-compare" data-title="Compare">
-        <button class="woosc-btn" data-id='<%# Eval("ProductID") %>'>
-            Compare
-        </button>
-    </div>
-
-    <span class="product-quickview" data-title="Quick View">
-        <a href="ProductDetails.aspx?pid=<%# Eval("ProductID") %>"
-           class="quickview quickview-button">
-            <span>Quick View</span>
-        </a>
-    </span>
+    <!-- 👁 Quickview (ICON ONLY) -->
+    <button type="button"
+            class="quickview-btn"
+            onclick="openQuickView(<%# Eval("ProductID") %>)">
+        🔍
+    </button>
 
 </div>
+
 
 
                     </div>
@@ -1109,36 +1207,25 @@
                              alt='<%# Eval("ProductName") %>' />
                     </a>
                 </div>
+            <div class="product-actions">
 
-                <!-- buttons – SAME AS ORIGINAL -->
-                <div class='product-button'>
-                    <div class="woosw-wishlist" data-title="Wishlist">
-                        <button class="woosw-btn"
-                                data-id='<%# Eval("ProductID") %>'>
-                            Add to wishlist
-                        </button>
-                    </div>
+    <!-- ❤️ Wishlist -->
+    <button type="button"
+        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+        data-pid="<%# Eval("ProductID") %>"
+        onclick="toggleWishlist(this)">
+        ❤
+    </button>
 
-                    <div class="woosc-compare" data-title="Compare">
-                        <button class="woosc-btn"
-                                data-id='<%# Eval("ProductID") %>'>
-                            Compare
-                        </button>
-                    </div>
+    <!-- 👁 Quickview (ICON ONLY) -->
+    <button type="button"
+            class="quickview-btn"
+            onclick="openQuickView(<%# Eval("ProductID") %>)">
+        🔍
+    </button>
 
+</div>
 
-
-                    <span class="product-quickview" data-title="Quick View">
-                        <a href="#"
-                           data-product_id='<%# Eval("ProductID") %>'
-                           class="quickview quickview-button">
-                            <span>Quick View</span>
-                        </a>
-                    </span>
-
-                    
-                            
-                </div>
 
             </div>
 
@@ -1204,6 +1291,30 @@
         <!-- #main-content -->
     </div>
     <!-- #main -->
+
+
+    <script>
+        function toggleWishlist(btn) {
+
+            var pid = btn.getAttribute("data-pid");
+            console.log("PID:", pid);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "<%= ResolveUrl("~/Client/Handlers/WishlistHandler.ashx") %>", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            console.log("STATUS:", xhr.status);
+            console.log("RESPONSE:", xhr.responseText);
+        }
+    };
+
+    xhr.send("pid=" + pid);
+}
+</script>
+
+
 
 </asp:Content>
 

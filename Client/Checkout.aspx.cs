@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 public partial class Client_Default : System.Web.UI.Page
 {
@@ -15,7 +12,7 @@ public partial class Client_Default : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            if (Session["Cart"] == null)
+            if (Session["Cart"] == null || Session["UserID"] == null)
             {
                 Response.Redirect("Cart.aspx");
                 return;
@@ -44,8 +41,10 @@ public partial class Client_Default : System.Web.UI.Page
 
     protected void btnPlaceOrder_Click(object sender, EventArgs e)
     {
-        if (txtAddress.Text == "" || txtCity.Text == "" ||
-            txtState.Text == "" || txtPincode.Text == "")
+        if (txtAddress.Text.Trim() == "" ||
+            txtCity.Text.Trim() == "" ||
+            txtState.Text.Trim() == "" ||
+            txtPincode.Text.Trim() == "")
         {
             lblMsg.Text = "Please fill delivery address";
             return;
@@ -60,48 +59,70 @@ public partial class Client_Default : System.Web.UI.Page
         using (SqlConnection con = new SqlConnection(conStr))
         {
             con.Open();
+            SqlTransaction tx = con.BeginTransaction();
 
-            // 1️⃣ INSERT ORDER
-            SqlCommand cmd = new SqlCommand(@"
+            try
+            {
+                // 1️⃣ INSERT INTO ORDERS (NO ADDRESS HERE)
+                SqlCommand cmdOrder = new SqlCommand(@"
 INSERT INTO Orders
-(UserID, OrderDate, TotalAmount, PaymentMode,
- OrderStatus, Address, City, State, Pincode)
+(UserID, OrderDate, TotalAmount, PaymentMode, OrderStatus)
 OUTPUT INSERTED.OrderID
 VALUES
-(@uid, GETDATE(), @total, 'COD',
- 'Placed', @add, @city, @state, @pin)", con);
+(@uid, GETDATE(), @total, 'COD', 'Placed')", con, tx);
 
-            cmd.Parameters.AddWithValue("@uid", userId);
-            cmd.Parameters.AddWithValue("@total", total);
-            cmd.Parameters.AddWithValue("@add", txtAddress.Text);
-            cmd.Parameters.AddWithValue("@city", txtCity.Text);
-            cmd.Parameters.AddWithValue("@state", txtState.Text);
-            cmd.Parameters.AddWithValue("@pin", txtPincode.Text);
+                cmdOrder.Parameters.AddWithValue("@uid", userId);
+                cmdOrder.Parameters.AddWithValue("@total", total);
 
-            orderId = Convert.ToInt32(cmd.ExecuteScalar());
+                orderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
 
-            // 2️⃣ INSERT ORDER ITEMS
-            foreach (CartItem item in cart)
-            {
-                SqlCommand cmdItem = new SqlCommand(@"
+                // 2️⃣ INSERT ADDRESS
+                SqlCommand cmdAddr = new SqlCommand(@"
+INSERT INTO OrderAddress
+(OrderID, Address, City, State, Pincode)
+VALUES
+(@oid, @add, @city, @state, @pin)", con, tx);
+
+                cmdAddr.Parameters.AddWithValue("@oid", orderId);
+                cmdAddr.Parameters.AddWithValue("@add", txtAddress.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@city", txtCity.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@state", txtState.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@pin", txtPincode.Text.Trim());
+
+                cmdAddr.ExecuteNonQuery();
+
+                // 3️⃣ INSERT ORDER ITEMS
+                foreach (CartItem item in cart)
+                {
+                    SqlCommand cmdItem = new SqlCommand(@"
 INSERT INTO OrderItems
 (OrderID, ProductID, Quantity, Price)
 VALUES
-(@oid, @pid, @qty, @price)", con);
+(@oid, @pid, @qty, @price)", con, tx);
 
-                cmdItem.Parameters.AddWithValue("@oid", orderId);
-                cmdItem.Parameters.AddWithValue("@pid", item.ProductID);
-                cmdItem.Parameters.AddWithValue("@qty", item.Quantity);
-                cmdItem.Parameters.AddWithValue("@price", item.Price);
+                    cmdItem.Parameters.AddWithValue("@oid", orderId);
+                    cmdItem.Parameters.AddWithValue("@pid", item.ProductID);
+                    cmdItem.Parameters.AddWithValue("@qty", item.Quantity);
+                    cmdItem.Parameters.AddWithValue("@price", item.Price);
 
-                cmdItem.ExecuteNonQuery();
+                    cmdItem.ExecuteNonQuery();
+                }
+
+                // ✅ COMMIT
+                tx.Commit();
+            }
+            catch
+            {
+                tx.Rollback();
+                lblMsg.Text = "Order failed. Please try again.";
+                return;
             }
         }
 
-        // 3️⃣ CLEAR CART
+        // 4️⃣ CLEAR CART
         Session["Cart"] = null;
 
-        // 4️⃣ REDIRECT SUCCESS
+        // 5️⃣ SUCCESS
         Response.Redirect("OrderSuccess.aspx?id=" + orderId);
     }
 }

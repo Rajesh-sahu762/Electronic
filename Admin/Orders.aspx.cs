@@ -30,25 +30,46 @@ public partial class Admin_Default : System.Web.UI.Page
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = @"
-                SELECT o.OrderID, o.TotalAmount, o.PaymentMode, o.OrderStatus, o.OrderDate,
-                       c.FullName AS ClientName, v.FullName AS VendorName
-                FROM Orders o
-                INNER JOIN Users c ON o.ClientID=c.UserID
-                INNER JOIN Users v ON o.VendorID=v.UserID
-                WHERE
-                (@search='' OR o.OrderID LIKE '%'+@search+'%' 
-                 OR c.FullName LIKE '%'+@search+'%' 
-                 OR v.FullName LIKE '%'+@search+'%')
-                AND (@status='' OR o.OrderStatus=@status)
-                AND (@from='' OR o.OrderDate>=@from)
-                AND (@to='' OR o.OrderDate<=@to)
-                ORDER BY o.OrderDate DESC";
+SELECT 
+    o.OrderID,
+    o.OrderDate,
+    o.TotalAmount,
+    o.PaymentMode,
+    o.OrderStatus,
+    c.FullName AS ClientName,
+
+    -- 🔥 MULTI VENDOR NAMES
+    STUFF((
+        SELECT DISTINCT ', ' + v.FullName
+        FROM OrderItems oi
+        JOIN Products p ON p.ProductID = oi.ProductID
+        JOIN Users v ON v.UserID = p.VendorID
+        WHERE oi.OrderID = o.OrderID
+        FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,2,'') 
+    AS VendorNames
+
+FROM Orders o
+JOIN Users c ON c.UserID = o.UserID
+WHERE
+    (@search = '' OR 
+     CAST(o.OrderID AS NVARCHAR) LIKE '%' + @search + '%' OR
+     c.FullName LIKE '%' + @search + '%')
+AND
+    (@status = '' OR o.OrderStatus = @status)
+AND
+    (@from IS NULL OR o.OrderDate >= @from)
+AND
+    (@to IS NULL OR o.OrderDate <= @to)
+ORDER BY o.OrderDate DESC";
 
             SqlCommand cmd = new SqlCommand(query, con);
+
             cmd.Parameters.AddWithValue("@search", txtSearch.Text.Trim());
             cmd.Parameters.AddWithValue("@status", ddlStatus.SelectedValue);
-            cmd.Parameters.AddWithValue("@from", txtFrom.Text == "" ? (object)DBNull.Value : txtFrom.Text);
-            cmd.Parameters.AddWithValue("@to", txtTo.Text == "" ? (object)DBNull.Value : txtTo.Text);
+            cmd.Parameters.AddWithValue("@from",
+                txtFrom.Text == "" ? (object)DBNull.Value : Convert.ToDateTime(txtFrom.Text));
+            cmd.Parameters.AddWithValue("@to",
+                txtTo.Text == "" ? (object)DBNull.Value : Convert.ToDateTime(txtTo.Text));
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
@@ -58,6 +79,14 @@ public partial class Admin_Default : System.Web.UI.Page
             gvOrders.DataBind();
         }
     }
+
+    protected void gvOrders_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+    {
+        // 🔒 We are NOT using edit mode, so just reset
+        gvOrders.EditIndex = -1;
+    }
+
+
 
     protected void gvOrders_RowCommand(object sender, System.Web.UI.WebControls.GridViewCommandEventArgs e)
     {

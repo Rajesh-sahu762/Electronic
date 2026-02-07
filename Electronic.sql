@@ -126,6 +126,21 @@ CREATE TABLE Orders (
     OrderDate DATETIME DEFAULT GETDATE()
 );
 
+ALTER TABLE Orders
+ADD UserID INT NOT NULL;
+
+
+CREATE TABLE OrderAddress
+(
+    AddressID INT IDENTITY PRIMARY KEY,
+    OrderID INT,
+    Address NVARCHAR(300),
+    City NVARCHAR(100),
+    State NVARCHAR(100),
+    Pincode NVARCHAR(10)
+);
+
+
 
 CREATE TABLE OrderItems (
     OrderItemID INT IDENTITY(1,1) PRIMARY KEY,

@@ -7,12 +7,15 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
+
 
 public partial class Client_Default : System.Web.UI.Page
 {
 
     string conStr = ConfigurationManager.ConnectionStrings["Electronic"].ConnectionString;
 
+    protected List<int> UserWishlist = new List<int>();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -21,6 +24,7 @@ public partial class Client_Default : System.Web.UI.Page
             LoadDeals();
             LoadCategories();
             LoadPopularProducts();
+            LoadUserWishlist();
             LoadTopSellingProducts();
         }
     }
@@ -117,6 +121,28 @@ ORDER BY p.CreatedAt DESC;
 
             rptPopularProducts.DataSource = dt;
             rptPopularProducts.DataBind();
+        }
+    }
+
+
+    void LoadUserWishlist()
+    {
+        if (Session["UserID"] == null) return;
+
+        int uid = Convert.ToInt32(Session["UserID"]);
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            SqlCommand cmd = new SqlCommand(
+                "SELECT ProductID FROM Wishlist WHERE UserID=@u", con);
+            cmd.Parameters.AddWithValue("@u", uid);
+
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                UserWishlist.Add(Convert.ToInt32(dr["ProductID"]));
+            }
         }
     }
 

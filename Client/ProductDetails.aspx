@@ -225,7 +225,7 @@
     Text="Add to Cart"
     OnClick="btnAddToCart_Click" />
 
-		<button class="button quick-buy">Buy Now</button><div class="woosc-compare" data-title="Compare"><button class="woosc-btn woosc-btn-3989 " data-id="3989">Compare</button></div>	
+		<button class="button quick-buy" href="#">Buy Now</button>
 
 		</div>
 			<div class="safe-checkout">
@@ -337,8 +337,7 @@
      <div class='product-button'>
                                                                                                                 <div class="woosw-wishlist" data-title="Wishlist">
                                                                                                                     <button class="woosw-btn woosw-btn-16541" data-id="16541">Add to wishlist</button></div>
-                                                                                                                <div class="woosc-compare" data-title="Compare">
-                                                                                                                    <button class="woosc-btn woosc-btn-16541 " data-id="16541">Compare</button></div>
+                                                                                                              
                                                                                                                 <span class="product-quickview" data-title="Quick View"><a href="#" data-product_id="16541" class="quickview quickview-button quickview-16541"><span>Quick View</span></a></span>
                                                                                                             </div>
 

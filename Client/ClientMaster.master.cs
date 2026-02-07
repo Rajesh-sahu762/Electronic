@@ -129,7 +129,11 @@ public partial class Client_ClientMaster : System.Web.UI.MasterPage
 
     void LoadWishlistCount()
     {
-        if (Session["UserID"] == null) return;
+        if (Session["UserID"] == null)
+        {
+            lblWishCount.Text = "0";
+            return;
+        }
 
         using (SqlConnection con = new SqlConnection(conStr))
         {
@@ -138,11 +142,13 @@ public partial class Client_ClientMaster : System.Web.UI.MasterPage
             cmd.Parameters.AddWithValue("@uid", Session["UserID"]);
 
             con.Open();
-            object count = cmd.ExecuteScalar();
-            lblWishCount.Text = (count == null) ? "0" : count.ToString();
-
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            lblWishCount.Text = count.ToString();
         }
+
+        upWishCount.Update(); // 🔥 SAME AS CART
     }
+
 
 
     void LoadCategories()

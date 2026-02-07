@@ -59,13 +59,13 @@
         <asp:GridView ID="gvOrders" runat="server"
             CssClass="table table-bordered table-hover align-middle"
             AutoGenerateColumns="False"
-            OnRowCommand="gvOrders_RowCommand">
+            OnRowCommand="gvOrders_RowCommand" OnRowCancelingEdit="gvOrders_RowCancelingEdit">
 
             <Columns>
 
                 <asp:BoundField DataField="OrderID" HeaderText="Order ID" />
                 <asp:BoundField DataField="ClientName" HeaderText="Client" />
-                <asp:BoundField DataField="VendorName" HeaderText="Vendor" />
+                <asp:BoundField DataField="VendorNames" HeaderText="Vendor(s)" />
                 <asp:BoundField DataField="TotalAmount" HeaderText="Amount" />
                 <asp:BoundField DataField="PaymentMode" HeaderText="Payment" />
                 <asp:BoundField DataField="OrderStatus" HeaderText="Status" />

@@ -30,25 +30,37 @@ public partial class Vendor_Default : System.Web.UI.Page
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = @"
-            SELECT o.OrderID, o.OrderDate, o.TotalAmount, o.OrderStatus,
-                   o.PaymentMode, u.FullName AS ClientName
-            FROM Orders o
-            JOIN Users u ON u.UserID = o.ClientID
-            WHERE o.VendorID=@vid";
+SELECT DISTINCT
+    o.OrderID,
+    o.OrderDate,
+    o.TotalAmount,
+    o.OrderStatus,
+    o.PaymentMode,
+    u.FullName AS ClientName
+FROM Orders o
+JOIN OrderItems oi ON oi.OrderID = o.OrderID
+JOIN Products p ON p.ProductID = oi.ProductID
+JOIN Users u ON u.UserID = o.UserID
+WHERE p.VendorID = @vid
+";
 
+            // 🔎 SEARCH
             if (!string.IsNullOrEmpty(search))
                 query += " AND (u.FullName LIKE @s OR CAST(o.OrderID AS NVARCHAR) LIKE @s)";
 
+            // 📅 DATE FILTER
             if (from != null)
                 query += " AND o.OrderDate >= @f";
 
             if (to != null)
                 query += " AND o.OrderDate <= @t";
 
+            // ✅ ORDER BY ALWAYS LAST
             query += " ORDER BY o.OrderDate DESC";
 
             SqlCommand cmd = new SqlCommand(query, con);
-            cmd.Parameters.Add("@vid", SqlDbType.Int).Value = Convert.ToInt32(Session["UserID"]);
+            cmd.Parameters.Add("@vid", SqlDbType.Int).Value =
+                Convert.ToInt32(Session["UserID"]);
 
             if (!string.IsNullOrEmpty(search))
                 cmd.Parameters.Add("@s", SqlDbType.NVarChar).Value = "%" + search + "%";
@@ -67,6 +79,7 @@ public partial class Vendor_Default : System.Web.UI.Page
             gvOrders.DataBind();
         }
     }
+
 
     protected void btnFilter_Click(object sender, EventArgs e)
     {
@@ -132,28 +145,46 @@ public partial class Vendor_Default : System.Web.UI.Page
         {
             con.Open();
 
-            SqlCommand get = new SqlCommand(
-                "SELECT OrderStatus FROM Orders WHERE OrderID=@id AND VendorID=@vid", con);
+            // 1️⃣ GET CURRENT STATUS (VENDOR SAFE)
+            SqlCommand get = new SqlCommand(@"
+SELECT TOP 1 o.OrderStatus
+FROM Orders o
+JOIN OrderItems oi ON oi.OrderID = o.OrderID
+JOIN Products p ON p.ProductID = oi.ProductID
+WHERE o.OrderID = @id AND p.VendorID = @vid
+", con);
 
-            get.Parameters.Add("@id", SqlDbType.Int).Value = orderId;
-            get.Parameters.Add("@vid", SqlDbType.Int).Value = Convert.ToInt32(Session["UserID"]);
+            get.Parameters.AddWithValue("@id", orderId);
+            get.Parameters.AddWithValue("@vid",
+                Convert.ToInt32(Session["UserID"]));
 
-            string s = Convert.ToString(get.ExecuteScalar());
-            if (s == "Delivered" || s == "Cancelled") return;
+            object obj = get.ExecuteScalar();
+            if (obj == null) return; // ❌ not vendor's order
+
+            string s = obj.ToString();
+
+            if (s == "Delivered" || s == "Cancelled")
+                return;
 
             string next =
-                s == "Pending" ? "Packed" :
+                s == "Placed" ? "Packed" :
                 s == "Packed" ? "Shipped" :
                 s == "Shipped" ? "Delivered" : s;
 
-            SqlCommand upd = new SqlCommand(
-                "UPDATE Orders SET OrderStatus=@s WHERE OrderID=@id", con);
+            // 2️⃣ UPDATE STATUS
+            SqlCommand upd = new SqlCommand(@"
+UPDATE Orders 
+SET OrderStatus = @s 
+WHERE OrderID = @id", con);
 
-            upd.Parameters.Add("@s", SqlDbType.NVarChar).Value = next;
-            upd.Parameters.Add("@id", SqlDbType.Int).Value = orderId;
+            upd.Parameters.AddWithValue("@s", next);
+            upd.Parameters.AddWithValue("@id", orderId);
+
             upd.ExecuteNonQuery();
         }
     }
+
+
 
     void CancelOrder(int orderId)
     {
@@ -162,14 +193,24 @@ public partial class Vendor_Default : System.Web.UI.Page
             con.Open();
 
             SqlCommand cmd = new SqlCommand(@"
-                UPDATE Orders
-                SET OrderStatus='Cancelled'
-                WHERE OrderID=@id AND VendorID=@vid
-                  AND OrderStatus IN ('Pending','Packed')", con);
+UPDATE Orders
+SET OrderStatus='Cancelled'
+WHERE OrderID=@id
+AND OrderID IN (
+    SELECT o.OrderID
+    FROM Orders o
+    JOIN OrderItems oi ON oi.OrderID = o.OrderID
+    JOIN Products p ON p.ProductID = oi.ProductID
+    WHERE p.VendorID = @vid
+)
+AND OrderStatus IN ('Placed','Packed')", con);
 
-            cmd.Parameters.Add("@id", SqlDbType.Int).Value = orderId;
-            cmd.Parameters.Add("@vid", SqlDbType.Int).Value = Convert.ToInt32(Session["UserID"]);
+            cmd.Parameters.AddWithValue("@id", orderId);
+            cmd.Parameters.AddWithValue("@vid",
+                Convert.ToInt32(Session["UserID"]));
+
             cmd.ExecuteNonQuery();
         }
     }
+
 }
