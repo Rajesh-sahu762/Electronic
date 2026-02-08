@@ -118,10 +118,14 @@ AND (@v=0 OR p.VendorID=@v)", con);
                 rptImages.DataBind();
 
                 ClientScript.RegisterStartupScript(
-                    this.GetType(),
-                    "img",
-                    "$('#imgModal').modal('show');",
-                    true);
+    this.GetType(),
+    "showImgModal",
+    "document.getElementById('imgModal').classList.add('show');" +
+    "document.getElementById('imgModal').style.display='block';" +
+    "document.body.classList.add('modal-open');",
+    true
+);
+
             }
         }
 

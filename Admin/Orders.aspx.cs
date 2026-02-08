@@ -110,8 +110,15 @@ ORDER BY o.OrderDate DESC";
                 gvItems.DataSource = dt;
                 gvItems.DataBind();
 
-                ScriptManager.RegisterStartupScript(this, GetType(),
-                    "items", "$('#itemsModal').modal('show');", true);
+                ClientScript.RegisterStartupScript(
+    this.GetType(),
+    "showItemsModal",
+    "document.getElementById('itemsModal').classList.add('show');" +
+    "document.getElementById('itemsModal').style.display='block';" +
+    "document.body.classList.add('modal-open');",
+    true
+);
+
             }
 
             if (e.CommandName == "Cancel")

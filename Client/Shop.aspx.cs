@@ -28,32 +28,71 @@ public partial class Client_Default : System.Web.UI.Page
         else if (sort == "price-desc")
             orderBy = "P.Price DESC";
 
+        string q = Request.QueryString["q"];
+        string cat = Request.QueryString["cat"];
+        string sub = Request.QueryString["sub"];
+
         using (SqlConnection con = new SqlConnection(
             ConfigurationManager.ConnectionStrings["Electronic"].ConnectionString))
         {
             string sql = @"
-        SELECT 
+        SELECT DISTINCT
             P.ProductID,
             P.ProductName,
             P.Price,
 
-            -- Main Image
             (SELECT TOP 1 ImagePath 
              FROM ProductImages 
              WHERE ProductID = P.ProductID 
              ORDER BY ImageID ASC) AS MainImage,
 
-            -- Hover Image
             (SELECT TOP 1 ImagePath 
              FROM ProductImages 
              WHERE ProductID = P.ProductID 
              ORDER BY ImageID DESC) AS HoverImage
 
         FROM Products P
-        WHERE P.IsBlocked = 0
-        ORDER BY " + orderBy;
+        INNER JOIN Categories C ON P.CategoryID = C.CategoryID
+        LEFT JOIN SubCategories S ON P.SubCategoryID = S.SubCategoryID
+        WHERE P.IsBlocked = 0";
 
-            SqlDataAdapter da = new SqlDataAdapter(sql, con);
+            // 🔍 SMART SEARCH
+            if (!string.IsNullOrEmpty(q))
+            {
+                sql += @"
+            AND (
+                P.ProductName LIKE @q
+                OR C.CategoryName LIKE @q
+                OR S.SubCategoryName LIKE @q
+            )";
+            }
+
+            // 📂 CATEGORY FILTER
+            if (!string.IsNullOrEmpty(cat))
+            {
+                sql += " AND P.CategoryID = @cat";
+            }
+
+            // 📁 SUB CATEGORY FILTER
+            if (!string.IsNullOrEmpty(sub))
+            {
+                sql += " AND P.SubCategoryID = @sub";
+            }
+
+            sql += " ORDER BY " + orderBy;
+
+            SqlCommand cmd = new SqlCommand(sql, con);
+
+            if (!string.IsNullOrEmpty(q))
+                cmd.Parameters.AddWithValue("@q", "%" + q + "%");
+
+            if (!string.IsNullOrEmpty(cat))
+                cmd.Parameters.AddWithValue("@cat", cat);
+
+            if (!string.IsNullOrEmpty(sub))
+                cmd.Parameters.AddWithValue("@sub", sub);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
             da.Fill(dt);
 

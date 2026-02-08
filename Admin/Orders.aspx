@@ -100,7 +100,8 @@
 </div>
 
 <!-- ORDER ITEMS MODAL -->
-<div class="modal fade" id="itemsModal" tabindex="-1">
+<div class="modal fade" id="itemsModal" tabindex="-1" aria-hidden="true">
+
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -115,5 +116,19 @@
         </div>
     </div>
 </div>
+
+
+    <script>
+        document.addEventListener("click", function (e) {
+            if (e.target.matches("[data-bs-dismiss='modal'], .modal")) {
+                var modal = document.getElementById("itemsModal");
+                modal.classList.remove("show");
+                modal.style.display = "none";
+                document.body.classList.remove("modal-open");
+            }
+        });
+</script>
+
+
 
 </asp:Content>

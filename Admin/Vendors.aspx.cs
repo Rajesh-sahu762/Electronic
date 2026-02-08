@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Web.UI;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -66,22 +67,77 @@ public partial class Admin_Default2 : System.Web.UI.Page
 
             if (e.CommandName == "ViewDocs")
             {
-                SqlCommand cmd = new SqlCommand(
-                "SELECT DocumentPath, LogoPath FROM VendorDetails WHERE VendorID=@id", con);
+                SqlCommand cmd = new SqlCommand(@"
+SELECT 
+    U.FullName,
+    U.Email,
+    U.ApprovalStatus,
+    U.IsBlocked,
+    V.ShopName,
+    V.DocumentPath,
+    V.LogoPath
+FROM Users U
+INNER JOIN VendorDetails V ON U.UserID = V.VendorID
+WHERE U.UserID = @id
+", con);
+
                 cmd.Parameters.AddWithValue("@id", id);
+
+
 
                 SqlDataReader dr = cmd.ExecuteReader();
                 if (dr.Read())
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("<p><a href='" + dr["DocumentPath"] + "' target='_blank'>View Document</a></p>");
-                    sb.Append("<img src='" + dr["LogoPath"] + "' style='max-height:100px;' />");
+
+                    sb.Append("<div class='row'>");
+
+                    // LEFT
+                    sb.Append("<div class='col-md-6'>");
+                    sb.Append("<h6>Vendor Info</h6>");
+                    sb.Append("<p><b>Name:</b> " + dr["FullName"] + "</p>");
+                    sb.Append("<p><b>Email:</b> " + dr["Email"] + "</p>");
+                    sb.Append("<p><b>Status:</b> " + dr["ApprovalStatus"] + "</p>");
+                    sb.Append("<p><b>Blocked:</b> " +
+                        (Convert.ToBoolean(dr["IsBlocked"]) ? "Yes" : "No") + "</p>");
+                    sb.Append("</div>");
+
+                    // RIGHT
+                    sb.Append("<div class='col-md-6'>");
+                    sb.Append("<h6>Business Info</h6>");
+                    sb.Append("<p><b>Shop Name:</b> " + dr["ShopName"] + "</p>");
+                    sb.Append("</div>");
+
+                    sb.Append("</div><hr/>");
+
+                    // DOCUMENTS
+                    string docPath = ResolveUrl("~/Uploads/VendorDocs/") + dr["DocumentPath"];
+                    string logoPath = ResolveUrl("~/Uploads/VendorLogos/") + dr["LogoPath"];
+
+                    sb.Append("<a href='" + docPath +
+                              "' target='_blank' class='btn btn-sm btn-outline-primary'>View Document</a><br/>");
+
+                    sb.Append("<img src='" + logoPath +
+                              "' class='img-fluid mt-3' style='max-height:120px;' />");
+
+
                     litDocs.Text = sb.ToString();
+
+
                 }
                 dr.Close();
 
-                ClientScript.RegisterStartupScript(this.GetType(),
-     "showModal", "$('#docModal').modal('show');", true);
+                ClientScript.RegisterStartupScript(
+    this.GetType(),
+    "showModal",
+    "document.getElementById('docModal').classList.add('show');" +
+    "document.getElementById('docModal').style.display='block';" +
+    "document.body.classList.add('modal-open');",
+    true
+);
+
+
+
 
             }
 

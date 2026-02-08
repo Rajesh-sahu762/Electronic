@@ -51,7 +51,12 @@ drop
 
 
 
-	select * from Users
+	select * from Orders
+
+
+	UPDATE Orders
+SET VendorID=2
+WHERE OrderID=1;
 
 
 INSERT INTO Users
@@ -73,14 +78,6 @@ CREATE TABLE Categories (
 ALTER TABLE Categories
 ADD ImagePath NVARCHAR(255) NULL;
 
-
-ALTER TABLE Products
-ADD IsDeal BIT DEFAULT 0;
-
-select * from Products
-select * from ProductImages
-
-delete from ProductImages where ProductID= 2;
 
 
 CREATE TABLE SubCategories (
@@ -110,11 +107,6 @@ CREATE TABLE ProductImages (
     ProductID INT,
     ImagePath NVARCHAR(255)
 );
-
-select * from ProductImages
-select * from VendorDetails
-
-DELETE FROM Users WHERE UserID=3;
 
 CREATE TABLE Orders (
     OrderID INT IDENTITY(1,1) PRIMARY KEY,
@@ -171,4 +163,8 @@ CREATE TABLE Wishlist (
 
 
 select * from Users
+select * from Orders
+select * from Wishlist
 
+
+select * from Products

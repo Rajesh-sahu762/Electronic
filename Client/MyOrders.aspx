@@ -90,6 +90,8 @@
 
     <style>
         .order-card{
+    border: 1px solid black;
+    margin: 10px;
     background:#fff;
     border-radius:14px;
     padding:18px;

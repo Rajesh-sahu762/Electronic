@@ -115,7 +115,8 @@
 </div>
 
 <!-- IMAGE MODAL -->
-<div class="modal fade" id="imgModal" tabindex="-1">
+<div class="modal fade" id="imgModal" tabindex="-1" aria-hidden="true">
+
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
 
@@ -137,5 +138,18 @@
 </div>
 </div>
 </div>
+
+
+    <script>
+        document.addEventListener("click", function (e) {
+            if (e.target.matches("[data-bs-dismiss='modal'], .modal")) {
+                var modal = document.getElementById("imgModal");
+                modal.classList.remove("show");
+                modal.style.display = "none";
+                document.body.classList.remove("modal-open");
+            }
+        });
+</script>
+
 
 </asp:Content>

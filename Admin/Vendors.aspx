@@ -3,6 +3,13 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
+    <style>
+.modal-body p { margin-bottom: 6px; }
+.modal-body h6 { margin-top: 10px; font-weight: 600; }
+</style>
+
+
+
 <h3 class="mb-3">Vendor Management</h3>
 
 <div class="row mb-3">
@@ -95,7 +102,7 @@
 </div>
 
 <!-- DOCUMENT MODAL -->
-<div class="modal fade" id="docModal">
+<div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
 <div class="modal-header">
@@ -108,5 +115,19 @@
 </div>
 </div>
 </div>
+
+
+    <script>
+        document.addEventListener("click", function (e) {
+            if (e.target.matches("[data-bs-dismiss='modal'], .modal")) {
+                var modal = document.getElementById("docModal");
+                modal.classList.remove("show");
+                modal.style.display = "none";
+                document.body.classList.remove("modal-open");
+            }
+        });
+</script>
+
+
 
 </asp:Content>

@@ -41,6 +41,12 @@
 
 
         <style>
+
+            .header-sticky .arostore-topcart {
+            display:none !important;
+            
+            }
+
             .quick-modal{
     display:none; position:fixed; inset:0;
     background:rgba(0,0,0,.6); z-index:9999;
@@ -360,7 +366,7 @@
 							</div>
 														<!-- End Search -->
 							<div class="login-header">
-																	<a class="active-login" href="#" ><i class="icon-my-account"></i></a>
+																	<a class="active-login" href="Profile.aspx" ><i class="icon-my-account"></i></a>
 																</div>	
 														<div class="wishlist-box">
     <a href="Wishlist.aspx">
@@ -551,7 +557,8 @@
 		</div> 
 								<div class="header-search-form hidden-sm hidden-xs">
 								<!-- Begin Search -->
-																	<form role="search" method="get" class="search-from2 ajax-search" action="https://arostore.wpbingosite.com/" data-admin="https://arostore.wpbingosite.com/wp-admin/admin-ajax.php" data-noresult="No Result" data-limit="6">
+																	<form method="get" action="Shop.aspx" class="search-from2">
+
 		<div class="select_category pwb-dropdown dropdown">
 		<span class="pwb-dropdown-toggle dropdown-toggle" data-toggle="dropdown">Category</span>
 		<span class="caret"></span>
@@ -768,7 +775,7 @@
 <asp:Repeater ID="rptCategories" runat="server">
     <ItemTemplate>
         <li class="level-0 menu-item std-menu">
-            <a href='<%# "Category.aspx?id=" + Eval("CategoryID") %>'>
+           <a href='<%# "Shop.aspx?cat=" + Eval("CategoryID") %>'>
                 <span class="menu-item-text">
                     <i class="icon-laptop--computer"></i>
                     <%# Eval("CategoryName") %>
@@ -783,7 +790,7 @@
 
                 <ItemTemplate>
                     <li>
-                        <a href='<%# "Category.aspx?sub=" + Eval("SubCategoryID") %>'>
+                      <a href='<%# "Shop.aspx?sub=" + Eval("SubCategoryID") %>'>
                             <%# Eval("SubCategoryName") %>
                         </a>
                     </li>
@@ -884,7 +891,7 @@
 							<ul class="elementor-icon-list-items">
 						
 								<li class="elementor-icon-list-item">
-											<a href="../contact/index.html">
+											<a href="#">
 
 											<span class="elementor-icon-list-text">Contact Us</span>
 											</a>
@@ -911,39 +918,39 @@
 				<div class="elementor-widget-container">
 							<ul class="elementor-icon-list-items">
 							<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="Shop.aspx">
 
 											<span class="elementor-icon-list-text">Smartphones</span>
 											</a>
 									</li>
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="Shop.aspx">
 
 											<span class="elementor-icon-list-text">Headphones</span>
 											</a>
 									</li>
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="Shop.aspx">
 
 											<span class="elementor-icon-list-text">Laptop & Table</span>
 											</a>
 									</li>
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="Shop.aspx">
 
 											<span class="elementor-icon-list-text">Gadgets</span>
 											</a>
 									</li>
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="Profile.aspx">
 
 											<span class="elementor-icon-list-text">My account</span>
 											</a>
 									</li>
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="MyOrders.aspx">
 
-											<span class="elementor-icon-list-text">Order Tracking</span>
+											<span class="elementor-icon-list-text">My Order</span>
 											</a>
 									</li>
 						</ul>
@@ -1012,7 +1019,7 @@
 			<div class="elementor-widget-wrap elementor-element-populated">
 						<div class="elementor-element elementor-element-b4f4ad3 elementor-widget elementor-widget-text-editor" data-id="b4f4ad3" data-element_type="widget" data-widget_type="text-editor.default">
 				<div class="elementor-widget-container">
-									© 2023 Aro store. All rights reserved.								</div>
+									All rights reserved by SPMPL.								</div>
 				</div>
 					</div>
 		</div>
@@ -1035,7 +1042,7 @@
 				<h2>What are you looking for?</h2>
 				<div class="close-search"></div>
 			</div>
-		<form method="get" action="Category.aspx">
+<form method="get" action="Shop.aspx">
     <input type="text"
            name="q"
            class="input-search s"
@@ -1046,6 +1053,7 @@
         <i class="icon-search"></i>
     </button>
 </form>
+
 
 		
 		</div>	
