@@ -36,7 +36,7 @@ public partial class Client_Default : System.Web.UI.Page
             ConfigurationManager.ConnectionStrings["Electronic"].ConnectionString))
         {
             string sql = @"
-        SELECT DISTINCT
+       SELECT
             P.ProductID,
             P.ProductName,
             P.Price,

@@ -158,35 +158,25 @@
 
         </a>
     </div>
+    <div class="product-actions">
 
-        <div class='product-button'>
-                    <div class="woosw-wishlist" data-title="Wishlist">
-                        <button class="woosw-btn"
-                                data-id='<%# Eval("ProductID") %>'>
-                            Add to wishlist
-                        </button>
-                    </div>
+    <!-- ❤️ Wishlist -->
+    <button type="button"
+            class="my-wishlist-btn"
+            data-pid="<%# Eval("ProductID") %>"
+            onclick="toggleWishlist(this)">
+        ♥
+    </button>
 
-                    <div class="woosc-compare" data-title="Compare">
-                        <button class="woosc-btn"
-                                data-id='<%# Eval("ProductID") %>'>
-                            Compare
-                        </button>
-                    </div>
+    <!-- 👁 Quickview -->
+    <button type="button"
+            class="quickview-btn"
+            onclick="openQuickView(<%# Eval("ProductID") %>)">
+        🔍
+    </button>
 
+</div>
 
-
-                    <span class="product-quickview" data-title="Quick View">
-                        <a href="#"
-                           data-product_id='<%# Eval("ProductID") %>'
-                           class="quickview quickview-button">
-                            <span>Quick View</span>
-                        </a>
-                    </span>
-
-                    
-                       
-                </div>
 
 </div>
 

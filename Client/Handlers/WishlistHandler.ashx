@@ -17,6 +17,12 @@ public class WishlistHandler : IHttpHandler, System.Web.SessionState.IRequiresSe
             return;
         }
 
+        if (string.IsNullOrEmpty(context.Request.Form["pid"]))
+        {
+            context.Response.Write("{\"status\":\"ERROR\"}");
+            return;
+        }
+
         int uid = Convert.ToInt32(context.Session["UserID"]);
         int pid = Convert.ToInt32(context.Request.Form["pid"]);
 
@@ -55,7 +61,6 @@ public class WishlistHandler : IHttpHandler, System.Web.SessionState.IRequiresSe
                 status = "ADDED";
             }
 
-            // 🔥 updated wishlist count
             SqlCommand cnt = new SqlCommand(
                 "SELECT COUNT(*) FROM Wishlist WHERE UserID=@u", con);
             cnt.Parameters.AddWithValue("@u", uid);
@@ -68,4 +73,9 @@ public class WishlistHandler : IHttpHandler, System.Web.SessionState.IRequiresSe
         }
     }
 
+    // 🔥 THIS WAS MISSING
+    public bool IsReusable
+    {
+        get { return false; }
+    }
 }

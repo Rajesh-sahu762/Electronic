@@ -201,4 +201,28 @@ ORDER BY NEWID()";
     }
 
 
+    protected void btnBuyNow_Click(object sender, EventArgs e)
+    {
+        if (Session["UserID"] == null)
+        {
+            Response.Redirect("Login.aspx");
+            return;
+        }
+
+        int pid = Convert.ToInt32(Request.QueryString["pid"]);
+
+        // 🔥 clear old buy-now item
+        Session["BuyNowItem"] = null;
+
+        // 🔥 store only THIS product
+        Session["BuyNowItem"] = new BuyNowModel
+        {
+            ProductID = pid,
+            Qty = 1
+        };
+
+        // 🔥 redirect to checkout
+        Response.Redirect("Checkout.aspx?mode=buynow");
+    }
+
 }

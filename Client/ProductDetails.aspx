@@ -225,7 +225,13 @@
     Text="Add to Cart"
     OnClick="btnAddToCart_Click" />
 
-		<button class="button quick-buy" href="#">Buy Now</button>
+            <asp:Button 
+    ID="btnBuyNow"
+    runat="server"
+    CssClass="button alt"
+    Text="Buy Now"
+    OnClick="btnBuyNow_Click" />
+
 
 		</div>
 			<div class="safe-checkout">
@@ -334,12 +340,25 @@
                         <img src='../Uploads/ProductImages/<%# Eval("HoverImage") %>' class="hover-image back" />
                     </a>
                 </div>
-     <div class='product-button'>
-                                                                                                                <div class="woosw-wishlist" data-title="Wishlist">
-                                                                                                                    <button class="woosw-btn woosw-btn-16541" data-id="16541">Add to wishlist</button></div>
-                                                                                                              
-                                                                                                                <span class="product-quickview" data-title="Quick View"><a href="#" data-product_id="16541" class="quickview quickview-button quickview-16541"><span>Quick View</span></a></span>
-                                                                                                            </div>
+<div class="product-actions">
+
+    <!-- ❤️ Wishlist -->
+    <button type="button"
+            class="my-wishlist-btn"
+            data-pid="<%# Eval("ProductID") %>"
+            onclick="toggleWishlist(this)">
+        ♥
+    </button>
+
+    <!-- 👁 Quickview -->
+    <button type="button"
+            class="quickview-btn"
+            onclick="openQuickView(<%# Eval("ProductID") %>)">
+        🔍
+    </button>
+
+</div>
+
 
             </div>
     <div class="products-content">

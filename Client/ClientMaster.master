@@ -39,6 +39,90 @@
 	}
 </style>
 
+    <style>
+
+        .table th, table td, .table th, .table td {
+            padding: 16px 25px !important;
+        }
+        .qty-btn {
+           margin: 4px;
+            
+             }
+
+/* ===== PRODUCT ACTIONS ===== */
+.product-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: all .25s ease;
+    z-index: 25;
+}
+
+.products-entry:hover .product-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== WISHLIST BUTTON ===== */
+.my-wishlist-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    transition: all .25s ease;
+    color: #888;
+}
+
+.my-wishlist-btn:hover {
+    transform: scale(1.08);
+}
+
+.my-wishlist-btn.active {
+    background: #ff6a00;
+    color: #fff;
+}
+
+/* ===== QUICKVIEW BUTTON ===== */
+.quickview-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    transition: all .25s ease;
+}
+
+.quickview-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Ensure relative parent */
+.products-thumb,
+.product-thumb-hover {
+    position: relative !important;
+}
+</style>
+
 
         <style>
 
@@ -136,8 +220,7 @@
 <link rel='stylesheet' href='../wp-content/plugins/woo-smart-compare/assets/libs/perfect-scrollbar/css/perfect-scrollbar.min32d4.css?ver=6.8.3' type='text/css' media='all' />
 <link rel='stylesheet' href='../wp-content/plugins/woo-smart-compare/assets/libs/perfect-scrollbar/css/custom-theme32d4.css?ver=6.8.3' type='text/css' media='all' />
 <link rel='stylesheet' href='../wp-content/plugins/woo-smart-compare/assets/css/frontend5352.css?ver=6.4.4' type='text/css' media='all' />
-<link rel='stylesheet' href='../wp-content/plugins/woo-smart-wishlist/assets/css/iconsd87f.css?ver=4.9.9' type='text/css' media='all' />
-<link rel='stylesheet' href='../wp-content/plugins/woo-smart-wishlist/assets/css/frontendd87f.css?ver=4.9.9' type='text/css' media='all' />
+
 <style type='text/css'>
 .woosw-popup .woosw-popup-inner .woosw-popup-content .woosw-popup-content-bot .woosw-notice { background-color: #a07542; } .woosw-popup .woosw-popup-inner .woosw-popup-content .woosw-popup-content-bot .woosw-popup-content-bot-inner a:hover { color: #a07542; border-color: #a07542; } 
 </style>
@@ -891,12 +974,19 @@
 							<ul class="elementor-icon-list-items">
 						
 								<li class="elementor-icon-list-item">
-											<a href="#">
+											<a href="MyOrders.aspx">
 
-											<span class="elementor-icon-list-text">Contact Us</span>
+											<span class="elementor-icon-list-text">My Order</span>
 											</a>
 									</li>
 							
+								<li class="elementor-icon-list-item">
+											<a href="Profile.aspx">
+
+											<span class="elementor-icon-list-text">Profile</span>
+											</a>
+									</li>
+
 								<li class="elementor-icon-list-item">
 											<a href="Shop.aspx">
 
@@ -1307,7 +1397,6 @@ special offer & fresh deals
     var woosw_vars = {"wc_ajax_url":"\/?wc-ajax=%%endpoint%%","nonce":"29f27f5eae","added_to_cart":"no","auto_remove":"no","page_myaccount":"yes","menu_action":"open_popup","reload_count":"no","perfect_scrollbar":"yes","wishlist_url":"https:\/\/arostore.wpbingosite.com\/wishlist\/","button_action":"list","message_position":"right-top","button_action_added":"popup","empty_confirm":"This action cannot be undone. Are you sure?","delete_confirm":"This action cannot be undone. Are you sure?","copied_text":"Copied the wishlist link:","menu_text":"Wishlist","button_text":"Add to wishlist","button_text_added":"Browse wishlist","button_normal_icon":"woosw-icon-5","button_added_icon":"woosw-icon-8","button_loading_icon":"woosw-icon-4"};
     /* ]]> */
 </script>
-<script type="text/javascript" src="../wp-content/plugins/woo-smart-wishlist/assets/js/frontendd87f.js?ver=4.9.9" id="woosw-frontend-js"></script>
 <script type="text/javascript" src="../wp-content/themes/arostore/js/popper.min.js" id="popper-js"></script>
 <script type="text/javascript" src="../wp-content/themes/arostore/js/bootstrap.min.js" id="bootstrap-js"></script>
 <script type="text/javascript" src="../wp-content/themes/arostore/js/jquery.mmenu.all.min.js" id="jquery-mmenu-all-js"></script>
@@ -1425,20 +1514,6 @@ special offer & fresh deals
 </div>
 
 
-    <script>
-
-        function openQuickView(pid) {
-            document.getElementById("quickFrame").src =
-                "ProductDetails.aspx?pid=" + pid + "&quick=1";
-            document.getElementById("quickViewModal").style.display = "block";
-        }
-        function closeQuickView() {
-            document.getElementById("quickViewModal").style.display = "none";
-        }
-
-</script>
-
-
  <script>
      function toggleWishlist(btn) {
 
@@ -1476,14 +1551,118 @@ special offer & fresh deals
                 }
             }
             else {
-                alert("Wishlist failed");
+                console.error("Wishlist error", xhr.responseText);
             }
+
         }
     };
 
     xhr.send("pid=" + pid);
 }
 </script>
+
+    <script>
+        /* 🔥 Kill Woo Smart Wishlist completely */
+        window.woosw_vars = undefined;
+        window.woosw = undefined;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var popup = document.getElementById("woosw_wishlist");
+            if (popup) {
+                popup.remove();
+            }
+        });
+</script>
+
+    <script>
+        document.addEventListener("click", function (e) {
+            if (
+                e.target.closest(".wishlist") ||
+                e.target.closest(".wishlist-btn") ||
+                e.target.closest(".icon-my-wishlist") ||
+                e.target.closest("[data-wishlist]") ||
+                e.target.closest("[data-woosw]")
+            ) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, true);
+</script>
+    
+    <script>
+        /* ================= WISHLIST ================= */
+        function toggleWishlist(btn) {
+
+            var pid = btn.getAttribute("data-pid");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "<%= ResolveUrl("~/Client/Handlers/WishlistHandler.ashx") %>", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                var res = JSON.parse(xhr.responseText);
+
+                if (res.status === "LOGIN") {
+                    alert("Please login to use wishlist ❤️");
+                    window.location.href = "Login.aspx";
+                    return;
+                }
+
+                if (res.status === "ADDED") {
+                    btn.classList.add("active");
+                }
+
+                if (res.status === "REMOVED") {
+                    btn.classList.remove("active");
+                }
+
+                var countEl = document.getElementById("wishlistCount");
+                if (countEl && res.count !== undefined) {
+                    countEl.innerText = res.count;
+                }
+
+            } catch (e) {
+                console.error("Wishlist JSON error", e);
+            }
+        }
+    };
+
+    xhr.send("pid=" + encodeURIComponent(pid));
+}
+
+
+/* ================= DISABLE THEME WISHLIST ================= */
+window.addEventListener("load", function () {
+    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.woosw_add_to_wishlist) {
+        window.jQuery.fn.woosw_add_to_wishlist = function () {};
+    }
+});
+</script>
+
+<script>
+    function openQuickView(pid) {
+        var modal = document.getElementById("quickViewModal");
+        var frame = document.getElementById("quickFrame");
+
+        if (!modal || !frame) {
+            console.error("QuickView modal not found");
+            return;
+        }
+
+        frame.src = "ProductDetails.aspx?pid=" + encodeURIComponent(pid) + "&quick=1";
+        modal.style.display = "block";
+    }
+
+    function closeQuickView() {
+        var modal = document.getElementById("quickViewModal");
+        if (modal) modal.style.display = "none";
+    }
+
+</script>
+
 
 
 

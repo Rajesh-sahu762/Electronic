@@ -65,7 +65,7 @@
 }
 
 /* ❤️ wishlist button – universal fix */
-.wishlist-btn {
+.my-wishlist-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -84,11 +84,11 @@
     color: #888;
 }
 
-.wishlist-btn:hover {
+.my-wishlist-btn:hover {
     transform: scale(1.08);
 }
 
-.wishlist-btn.active {
+.my-wishlist-btn.active {
     background: #ff6a00;
     color: #fff;
 }
@@ -754,12 +754,14 @@
         <div class="product-actions">
 
     <!-- ❤️ Wishlist -->
-    <button type="button"
-        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+<button type="button"
+        class="my-wishlist-btn"
         data-pid="<%# Eval("ProductID") %>"
         onclick="toggleWishlist(this)">
-        ❤
-    </button>
+    ♥
+</button>
+
+
 
     <!-- 👁 Quickview (ICON ONLY) -->
     <button type="button"
@@ -842,7 +844,7 @@
                                                                 <div class="elementor-element elementor-element-4e5327a elementor-align-right elementor-mobile-align-center elementor-widget elementor-widget-button" data-id="4e5327a" data-element_type="widget" data-widget_type="button.default">
                                                                     <div class="elementor-widget-container">
                                                                         <div class="elementor-button-wrapper">
-                                                                            <a class="elementor-button elementor-button-link elementor-size-sm" href="Categories.aspx">
+                                                                            <a class="elementor-button elementor-button-link elementor-size-sm" href="Shop.aspx">
                                                                                 <span class="elementor-button-content-wrapper">
                                                                                     <span class="elementor-button-text">View all Category</span>
                                                                                 </span>
@@ -878,7 +880,7 @@
                                                                 <div class="elementor-element elementor-element-e557690 elementor-mobile-align-center elementor-widget elementor-widget-button" data-id="e557690" data-element_type="widget" data-widget_type="button.default">
                                                                     <div class="elementor-widget-container">
                                                                         <div class="elementor-button-wrapper">
-                                                                            <a class="elementor-button elementor-button-link elementor-size-sm" href="Categories.aspx">
+                                                                            <a class="elementor-button elementor-button-link elementor-size-sm" href="Shop.aspx">
                                                                                 <span class="elementor-button-content-wrapper">
                                                                                     <span class="elementor-button-text">Shop Now</span>
                                                                                 </span>
@@ -903,7 +905,7 @@
             <ItemTemplate>
                 <div class="item">
                     <div class="item-title">
-                        <a href='CategoryProducts.aspx?cid=<%# Eval("CategoryID") %>&sid=<%# Eval("SubCategoryID") %>'>
+                        <a href='Shop.aspx?cid=<%# Eval("CategoryID") %>&sid=<%# Eval("SubCategoryID") %>'>
                             <span><%# Eval("SubCategoryName") %></span>
                         </a>
                     </div>
@@ -991,12 +993,13 @@
      <div class="product-actions">
 
     <!-- ❤️ Wishlist -->
-    <button type="button"
-        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+<button type="button"
+        class="my-wishlist-btn"
         data-pid="<%# Eval("ProductID") %>"
         onclick="toggleWishlist(this)">
-        ❤
-    </button>
+    ♥
+</button>
+
 
     <!-- 👁 Quickview (ICON ONLY) -->
     <button type="button"
@@ -1015,7 +1018,7 @@
                         <div class="contents">
 
                             <div class="cat-products">
-                                <a href='CategoryProducts.aspx?cid=<%# Eval("CategoryID") %>'>
+                                <a href='Shop.aspx?cid=<%# Eval("CategoryID") %>'>
                                     <%# Eval("CategoryName") %>
                                 </a>
                             </div>
@@ -1210,12 +1213,14 @@
             <div class="product-actions">
 
     <!-- ❤️ Wishlist -->
-    <button type="button"
-        class='wishlist-btn <%# UserWishlist.Contains(Convert.ToInt32(Eval("ProductID"))) ? "active" : "" %>'
+<button type="button"
+        class="my-wishlist-btn"
         data-pid="<%# Eval("ProductID") %>"
         onclick="toggleWishlist(this)">
-        ❤
-    </button>
+    ♥
+</button>
+
+
 
     <!-- 👁 Quickview (ICON ONLY) -->
     <button type="button"
@@ -1233,7 +1238,7 @@
                 <div class="contents">
 
                     <div class="cat-products">
-                        <a href='CategoryProducts.aspx?cid=<%# Eval("CategoryID") %>'>
+                        <a href='Shop.aspx?cid=<%# Eval("CategoryID") %>'>
                             <%# Eval("CategoryName") %>
                         </a>
                     </div>
@@ -1293,26 +1298,64 @@
     <!-- #main -->
 
 
-    <script>
-        function toggleWishlist(btn) {
+   <script>
+       function toggleWishlist(btn) {
 
-            var pid = btn.getAttribute("data-pid");
-            console.log("PID:", pid);
+           var pid = btn.getAttribute("data-pid");
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "<%= ResolveUrl("~/Client/Handlers/WishlistHandler.ashx") %>", true);
+           var xhr = new XMLHttpRequest();
+           xhr.open("POST", "<%= ResolveUrl("~/Client/Handlers/WishlistHandler.ashx") %>", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            console.log("STATUS:", xhr.status);
-            console.log("RESPONSE:", xhr.responseText);
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            try {
+                var res = JSON.parse(xhr.responseText);
+
+                console.log("Wishlist response:", res);
+
+                // 🔐 not logged in
+                if (res.status === "LOGIN") {
+                    alert("Please login to use wishlist ❤️");
+                    window.location.href = "Login.aspx";
+                    return;
+                }
+
+                // ❤️ added
+                if (res.status === "ADDED") {
+                    btn.classList.add("active");
+                }
+
+                // ❌ removed
+                if (res.status === "REMOVED") {
+                    btn.classList.remove("active");
+                }
+
+                // 🔢 update header wishlist count (if exists)
+                var countEl = document.getElementById("wishlistCount");
+                if (countEl && res.count !== undefined) {
+                    countEl.innerText = res.count;
+                }
+
+            } catch (e) {
+                console.error("Invalid JSON from wishlist handler", e);
+            }
         }
     };
 
-    xhr.send("pid=" + pid);
-}
+    xhr.send("pid=" + encodeURIComponent(pid));
+       }
+
+       window.addEventListener("load", function () {
+           if (window.jQuery && window.jQuery.fn && window.jQuery.fn.woosw_add_to_wishlist) {
+               window.jQuery.fn.woosw_add_to_wishlist = function () { };
+               console.log("Theme wishlist disabled");
+           }
+       });
+
 </script>
+
 
 
 

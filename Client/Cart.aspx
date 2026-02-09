@@ -4,6 +4,25 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 
 <style>
+
+    
+        .alt{
+            margin: 5px 5px 5px 5px;
+             width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  border:none;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: #ffb300;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  
+        }
 .cart-table img{width:70px}
 .qty-btn{padding:4px 10px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer}
 </style>
@@ -76,7 +95,7 @@
         <asp:Button ID="btnCheckout"
             runat="server"
             Text="Place Order"
-            CssClass="button"
+            CssClass="button alt"
             OnClick="btnCheckout_Click" />
 
     </ContentTemplate>

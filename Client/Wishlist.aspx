@@ -52,13 +52,15 @@
                         </td>
 
                         <td>
-                            <asp:LinkButton ID="btnRemove"
-                                runat="server"
-                                CommandName="REMOVE"
-                                CommandArgument='<%# Eval("ProductID") %>'
-                                CssClass="btn btn-link text-danger">
-                                ×
-                            </asp:LinkButton>
+                         <td>
+    <button type="button"
+            class="btn btn-link text-danger"
+            data-pid="<%# Eval("ProductID") %>"
+            onclick="removeFromWishlist(this)">
+        ×
+    </button>
+</td>
+
                         </td>
                     </tr>
                 </ItemTemplate>
@@ -73,6 +75,52 @@
         </div>
     </div>
 </div>
+
+
+    <script>
+        function removeFromWishlist(btn) {
+
+            var pid = btn.getAttribute("data-pid");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "<%= ResolveUrl("~/Client/Handlers/WishlistHandler.ashx") %>", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            try {
+                var res = JSON.parse(xhr.responseText);
+
+                if (res.status === "REMOVED") {
+
+                    // 🔥 remove row instantly
+                    var row = btn.closest("tr");
+                    if (row) row.remove();
+
+                    // 🔢 update header count
+                    var countEl = document.getElementById("wishlistCount");
+                    if (countEl && res.count !== undefined) {
+                        countEl.innerText = res.count;
+                    }
+
+                    // ❤️ empty message
+                    var table = document.querySelector(".shop_table tbody");
+                    if (!table || table.children.length === 0) {
+                        location.reload(); // show empty panel properly
+                    }
+                }
+
+            } catch (e) {
+                console.error("Wishlist remove error", e);
+            }
+        }
+    };
+
+    xhr.send("pid=" + encodeURIComponent(pid));
+}
+</script>
+
 
 </asp:Content>
 
