@@ -236,7 +236,7 @@
 		</div>
 			<div class="safe-checkout">
 			<div class="img-safe-checkout">
-				<img src="../../wp-content/uploads/2023/05/payments-2.png" alt="Image Safe Checkout">
+
 			</div>
 			<div class="title-safe-checkout">Guaranteed Safe Checkout</div>
 		</div>

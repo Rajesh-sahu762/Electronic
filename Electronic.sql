@@ -7,38 +7,18 @@ CREATE TABLE Users (
     PasswordHash NVARCHAR(255),
     IsApproved BIT DEFAULT 1,   -- Vendor = 0 until admin approves
     IsBlocked BIT DEFAULT 0,
-    CreatedAt DATETIME DEFAULT GETDATE()
-);
-
-
-select * from Products
-
-ALTER TABLE Users
-ADD 
-    EmailOTP NVARCHAR(6),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+	 EmailOTP NVARCHAR(6),
     OTPExpiry DATETIME,
-	EmailVerified BIT DEFAULT 0;
-    IsSetupComplete BIT DEFAULT 0;
+	EmailVerified BIT DEFAULT 0,
+    IsSetupComplete BIT DEFAULT 0,
 	ResendCount INT DEFAULT 0,
-    LastOTPTime DATETIME;
+    LastOTPTime DATETIME,
 	LoginAttempts INT DEFAULT 0,
-    LockUntil DATETIME;
-
-	ALTER TABLE Users
-ADD 
-    ApprovalStatus NVARCHAR(20) DEFAULT 'Pending', -- Pending / Approved / Rejected
-    AdminRemark NVARCHAR(255);
-
-
-
-SELECT ProductID, ImagePath FROM ProductImages
-
-
-	ALTER TABLE Users
-drop
-    OTP ,
-    IsVerified
-
+    LockUntil DATETIME,
+	  ApprovalStatus NVARCHAR(20) DEFAULT 'Pending', -- Pending / Approved / Rejected
+    AdminRemark NVARCHAR(255)
+);
 
 
 	CREATE TABLE VendorApprovalHistory (
@@ -49,14 +29,6 @@ drop
     ActionDate DATETIME DEFAULT GETDATE()
 );
 
-
-
-	select * from Orders
-
-
-	UPDATE Orders
-SET VendorID=2
-WHERE OrderID=1;
 
 
 INSERT INTO Users
@@ -70,13 +42,10 @@ CREATE TABLE Categories (
     CategoryID INT IDENTITY(1,1) PRIMARY KEY,
     CategoryName NVARCHAR(100),
     IsActive BIT DEFAULT 1,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    CreatedAt DATETIME DEFAULT GETDATE(),
+	ImagePath NVARCHAR(255) NULL
 );
 
-
-
-ALTER TABLE Categories
-ADD ImagePath NVARCHAR(255) NULL;
 
 
 
@@ -110,17 +79,13 @@ CREATE TABLE ProductImages (
 
 CREATE TABLE Orders (
     OrderID INT IDENTITY(1,1) PRIMARY KEY,
-    ClientID INT, -- Users.UserID
+    UserID INT NOT NULL,
     VendorID INT, -- Users.UserID
     TotalAmount DECIMAL(10,2),
     OrderStatus NVARCHAR(50),
     PaymentMode NVARCHAR(10) DEFAULT 'COD',
     OrderDate DATETIME DEFAULT GETDATE()
 );
-
-ALTER TABLE Orders
-ADD UserID INT NOT NULL;
-
 
 CREATE TABLE OrderAddress
 (
@@ -131,8 +96,6 @@ CREATE TABLE OrderAddress
     State NVARCHAR(100),
     Pincode NVARCHAR(10)
 );
-
-
 
 CREATE TABLE OrderItems (
     OrderItemID INT IDENTITY(1,1) PRIMARY KEY,
@@ -160,11 +123,3 @@ CREATE TABLE Wishlist (
     ProductID INT,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
-
-
-select * from Users
-select * from Orders
-select * from Wishlist
-
-
-select * from Products

@@ -40,6 +40,8 @@ public partial class Client_Default : System.Web.UI.Page
 
 
 
+
+
     void LoadBuyNowProduct()
     {
         BuyNowModel item = Session["BuyNowItem"] as BuyNowModel;
@@ -54,9 +56,21 @@ public partial class Client_Default : System.Web.UI.Page
             ConfigurationManager.ConnectionStrings["Electronic"].ConnectionString))
         {
             SqlCommand cmd = new SqlCommand(@"
-            SELECT ProductID, ProductName, Price
-            FROM Products
-            WHERE ProductID = @pid", con);
+SELECT 
+    P.ProductID,
+    P.ProductName,
+    P.Price,
+    1 AS Quantity,
+    (
+        SELECT TOP 1 ImagePath
+        FROM ProductImages
+        WHERE ProductID = P.ProductID
+        ORDER BY ImageID ASC
+    ) AS ImagePath
+FROM Products P
+WHERE P.ProductID = @pid
+", con);
+
 
             cmd.Parameters.AddWithValue("@pid", item.ProductID);
 
@@ -64,8 +78,14 @@ public partial class Client_Default : System.Web.UI.Page
             DataTable dt = new DataTable();
             da.Fill(dt);
 
-            rptCheckout.DataSource = dt;
-            rptCheckout.DataBind();
+            rptCart.DataSource = dt;
+            rptCart.DataBind();
+
+            // total bhi set kar
+            decimal total = Convert.ToDecimal(dt.Rows[0]["Price"]);
+            lblTotal.Text = total.ToString("0.00");
+            ViewState["Total"] = total;
+
         }
     }
 
@@ -100,9 +120,7 @@ public partial class Client_Default : System.Web.UI.Page
 
         int userId = Convert.ToInt32(Session["UserID"]);
         string mode = Request.QueryString["mode"];
-
         int orderId = 0;
-        decimal total = 0;
 
         using (SqlConnection con = new SqlConnection(conStr))
         {
@@ -111,7 +129,28 @@ public partial class Client_Default : System.Web.UI.Page
 
             try
             {
-                // 🔥 ORDER MASTER
+                decimal total = 0;
+
+                // 🔥 CALCULATE TOTAL
+                if (mode == "buynow")
+                {
+                    BuyNowModel item = Session["BuyNowItem"] as BuyNowModel;
+
+                    SqlCommand pCmd = new SqlCommand(
+                        "SELECT Price FROM Products WHERE ProductID=@pid", con, tx);
+                    pCmd.Parameters.AddWithValue("@pid", item.ProductID);
+
+                    decimal price = Convert.ToDecimal(pCmd.ExecuteScalar());
+                    total = price * item.Qty;
+                }
+                else
+                {
+                    List<CartItem> cart = (List<CartItem>)Session["Cart"];
+                    foreach (CartItem c in cart)
+                        total += c.Price * c.Quantity;
+                }
+
+                // 1️⃣ ORDERS
                 SqlCommand cmdOrder = new SqlCommand(@"
 INSERT INTO Orders
 (UserID, OrderDate, TotalAmount, PaymentMode, OrderStatus)
@@ -119,58 +158,48 @@ OUTPUT INSERTED.OrderID
 VALUES
 (@uid, GETDATE(), @total, 'COD', 'Placed')", con, tx);
 
-                // ===== BUY NOW =====
+                cmdOrder.Parameters.AddWithValue("@uid", userId);
+                cmdOrder.Parameters.AddWithValue("@total", total);
+
+                orderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
+
+                // 2️⃣ ADDRESS
+                SqlCommand cmdAddr = new SqlCommand(@"
+INSERT INTO OrderAddress
+(OrderID, Address, City, State, Pincode)
+VALUES
+(@oid, @add, @city, @state, @pin)", con, tx);
+
+                cmdAddr.Parameters.AddWithValue("@oid", orderId);
+                cmdAddr.Parameters.AddWithValue("@add", txtAddress.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@city", txtCity.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@state", txtState.Text.Trim());
+                cmdAddr.Parameters.AddWithValue("@pin", txtPincode.Text.Trim());
+                cmdAddr.ExecuteNonQuery();
+
+                // 3️⃣ ORDER ITEMS
                 if (mode == "buynow")
                 {
                     BuyNowModel item = Session["BuyNowItem"] as BuyNowModel;
-                    if (item == null)
-                    {
-                        Response.Redirect("Cart.aspx");
-                        return;
-                    }
-
-                    SqlCommand priceCmd = new SqlCommand(
-                        "SELECT Price FROM Products WHERE ProductID=@pid", con, tx);
-                    priceCmd.Parameters.AddWithValue("@pid", item.ProductID);
-
-                    decimal price = Convert.ToDecimal(priceCmd.ExecuteScalar());
-                    total = price * item.Qty;
-
-                    cmdOrder.Parameters.AddWithValue("@uid", userId);
-                    cmdOrder.Parameters.AddWithValue("@total", total);
-
-                    orderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
-
-                    InsertAddress(con, tx, orderId);
 
                     SqlCommand cmdItem = new SqlCommand(@"
 INSERT INTO OrderItems
 (OrderID, ProductID, Quantity, Price)
 VALUES
-(@oid, @pid, @qty, @price)", con, tx);
+(@oid, @pid, @qty,
+ (SELECT Price FROM Products WHERE ProductID=@pid)
+)", con, tx);
 
                     cmdItem.Parameters.AddWithValue("@oid", orderId);
                     cmdItem.Parameters.AddWithValue("@pid", item.ProductID);
                     cmdItem.Parameters.AddWithValue("@qty", item.Qty);
-                    cmdItem.Parameters.AddWithValue("@price", price);
                     cmdItem.ExecuteNonQuery();
 
-                    Session["BuyNowItem"] = null;
+                    Session["BuyNowItem"] = null; // 🔥 VERY IMPORTANT
                 }
-                // ===== CART =====
                 else
                 {
                     List<CartItem> cart = (List<CartItem>)Session["Cart"];
-
-                    foreach (CartItem c in cart)
-                        total += c.Price * c.Quantity;
-
-                    cmdOrder.Parameters.AddWithValue("@uid", userId);
-                    cmdOrder.Parameters.AddWithValue("@total", total);
-
-                    orderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
-
-                    InsertAddress(con, tx, orderId);
 
                     foreach (CartItem item in cart)
                     {
@@ -202,6 +231,7 @@ VALUES
 
         Response.Redirect("OrderSuccess.aspx?id=" + orderId);
     }
+
 
     void InsertAddress(SqlConnection con, SqlTransaction tx, int orderId)
     {

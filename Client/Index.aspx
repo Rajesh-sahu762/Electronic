@@ -1100,7 +1100,7 @@
                                                                         <div class="elementor-button-wrapper">
                                                                             <a class="elementor-button elementor-button-link elementor-size-sm" href="Shop.aspx">
                                                                                 <span class="elementor-button-content-wrapper">
-                                                                                    <span class="elementor-button-text">from $309.00</span>
+                                                                                    <span class="elementor-button-text">from ₹309.00</span>
                                                                                 </span>
                                                                             </a>
                                                                         </div>
