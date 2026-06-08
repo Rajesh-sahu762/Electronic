@@ -277,10 +277,11 @@ Delivered
 
 ## 📸 Screenshots
 
-- Vendor Dashboard(/Uploads/images/vendor.png)
-- Homepage(/Uploads/images/home.png)
-- Detail Page(/Uploads/images/detail.png)
-- Wishlist Page(/Uploads/images/wishlist.png)
+
+- ![Vendor Dashboard] (/Uploads/images/vendor.png)
+- ![Homepage] (/Uploads/images/home.png)
+- ![Detail Page] (/Uploads/images/detail.png)
+- ![Wishlist Page] (/Uploads/images/wishlist.png)
 
 (Add screenshots here)
 
