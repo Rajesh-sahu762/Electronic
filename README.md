@@ -277,13 +277,17 @@ Delivered
 
 ## 📸 Screenshots
 
+### Vendor Dashboard
+![Vendor Dashboard](Uploads/images/vendor.png)
 
-- ![Vendor Dashboard] (/Uploads/images/vendor.png)
-- ![Homepage] (/Uploads/images/home.png)
-- ![Detail Page] (/Uploads/images/detail.png)
-- ![Wishlist Page] (/Uploads/images/wishlist.png)
+### Homepage
+![Homepage](Uploads/images/home.png)
 
-(Add screenshots here)
+### Product Detail Page
+![Detail Page](Uploads/images/detail.png)
+
+### Wishlist Page
+![Wishlist Page](Uploads/images/wishlist.png)
 
 ---
 
